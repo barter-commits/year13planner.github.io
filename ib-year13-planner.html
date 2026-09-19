@@ -1,0 +1,1153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Year 13 command centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font-d:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --font-b:'Atkinson Hyperlegible','Segoe UI',system-ui,-apple-system,sans-serif;
+  --ink:#16223f; --ink2:#465378; --ink3:#66738f;
+  --paper:#eef1f7; --surface:#ffffff; --raise:#f6f8fc; --line:#d5dbea; --line2:#e8ecf5;
+  --acad:#2b57d9; --uni:#b9346f; --exam:#cf6a08; --pers:#0d7f70;
+  --bad:#c4262e; --warn:#9a6000; --ok:#1b7a44; --focus:#2b57d9;
+  --l0:#e9eefb; --l1:#c9d6f6; --l2:#f6d98f; --l3:#f0a3a3;
+  --shadow:0 1px 0 rgba(22,34,63,.05),0 10px 28px -18px rgba(22,34,63,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e9edf9; --ink2:#b3bdd9; --ink3:#8b97b8;
+    --paper:#0e1323; --surface:#161c31; --raise:#1b2240; --line:#2c3556; --line2:#232b49;
+    --acad:#7f9fff; --uni:#f27fb2; --exam:#ffa24a; --pers:#4fd1bd;
+    --bad:#ff8a8f; --warn:#f0bf5a; --ok:#63d391; --focus:#9db5ff;
+    --l0:#202a4d; --l1:#2c3d75; --l2:#6b5622; --l3:#7a3238;
+    --shadow:0 1px 0 rgba(0,0,0,.3),0 10px 28px -18px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e9edf9; --ink2:#b3bdd9; --ink3:#8b97b8;
+  --paper:#0e1323; --surface:#161c31; --raise:#1b2240; --line:#2c3556; --line2:#232b49;
+  --acad:#7f9fff; --uni:#f27fb2; --exam:#ffa24a; --pers:#4fd1bd;
+  --bad:#ff8a8f; --warn:#f0bf5a; --ok:#63d391; --focus:#9db5ff;
+  --l0:#202a4d; --l1:#2c3d75; --l2:#6b5622; --l3:#7a3238;
+  --shadow:0 1px 0 rgba(0,0,0,.3),0 10px 28px -18px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--font-b);}
+h1,h2,h3{font-family:var(--font-d);font-weight:700;letter-spacing:-.01em;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+.shell{max-width:1560px;margin:0 auto;padding:18px 18px 60px}
+.cat-academic{--cc:var(--acad)} .cat-university{--cc:var(--uni)} .cat-exam{--cc:var(--exam)} .cat-personal{--cc:var(--pers)}
+
+/* header */
+.top{display:flex;gap:12px 16px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.top h1{font-size:clamp(24px,3.4vw,32px);line-height:1.05}
+.top .sub{margin:4px 0 0;color:var(--ink2);font-size:14px}
+.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.save{font-size:13px;color:var(--ink3);margin-right:4px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;font-size:14px;line-height:1.2}
+.btn:hover{background:var(--raise)}
+.btn.primary{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.primary:hover{opacity:.9}
+.btn.ghost{background:transparent}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.small{padding:4px 9px;font-size:13px}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+
+/* summary band */
+.strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+.metric{padding:10px 14px;border-right:1px solid var(--line2);min-width:0}
+.metric:last-child{border-right:0}
+.m-lbl{font-size:13px;color:var(--ink2);display:block}
+.m-num{font:700 26px/1.1 var(--font-d);display:block;margin-top:1px}
+.m-num small{font:400 14px var(--font-b);color:var(--ink2);margin-left:4px}
+.m-sub{font-size:13px;color:var(--ink3);display:block;margin-top:2px}
+.meter{height:5px;border-radius:3px;background:var(--line2);margin-top:6px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--cc,var(--ink))}
+.m-warn{color:var(--bad)}
+
+/* next up */
+.nextup{margin:10px 0;padding:8px 14px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--ink);border-radius:10px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.nextup h2{font-size:16px;margin-right:4px;flex:none}
+.nu-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;flex:1;min-width:0}
+.nu{border:1px solid var(--line);background:var(--raise);border-radius:8px;padding:5px 10px;text-align:left;font-size:14px;min-width:0}
+.nu:hover{border-color:var(--cc)}
+.nu b{display:block;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nu span{color:var(--ink2);font-size:13px}
+
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:12px 0 12px;overflow-x:auto}
+.tab{border:0;background:transparent;padding:8px 14px;font:700 15px var(--font-d);color:var(--ink2);border-bottom:3px solid transparent;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.tab .cnt{display:inline-block;margin-left:6px;background:var(--bad);color:#fff;border-radius:10px;padding:0 7px;font:700 12px var(--font-b)}
+.view[hidden]{display:none}
+
+/* toolbar */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.toolbar .grow{flex:1}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.filters select,.filters input{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 8px;font-size:14px;max-width:100%}
+.filters input[type=search]{min-width:160px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:6px 11px;font-size:14px;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink2);margin:2px 0 10px;align-items:center}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.sw{width:14px;height:14px;border-radius:3px;background:var(--cc);display:inline-block}
+.sw.dash{background:color-mix(in srgb,var(--ink3) 22%,var(--surface));border:2px dashed var(--ink3)}
+.sw.solid{background:color-mix(in srgb,var(--ink3) 22%,var(--surface));border:2px solid var(--ink3)}
+.sw.dia{transform:rotate(45deg);width:11px;height:11px;border-radius:2px}
+.sw.line{width:3px;height:16px;background:var(--ink);border-radius:0}
+.sw.heat{width:18px}
+
+/* gantt */
+.gantt{--rh:36px;position:relative;overflow:auto;max-height:calc(100vh - 90px);min-height:380px;border:1px solid var(--line);border-radius:10px;background:var(--surface);box-shadow:var(--shadow)}
+.g-canvas{position:relative;width:calc(var(--lw) + var(--tw))}
+.g-head{position:sticky;top:0;z-index:8;background:var(--surface);box-shadow:0 1px 0 var(--line)}
+.g-hr{display:flex}
+.g-corner{position:sticky;left:0;z-index:9;width:var(--lw);flex:none;background:var(--surface);border-right:1px solid var(--line);padding:0 12px;display:flex;align-items:center;font-size:12px;color:var(--ink3)}
+.g-ht{position:relative;width:var(--tw);flex:none}
+.r-month{height:28px}.r-week{height:22px}.r-key{height:26px}.r-load{height:26px}
+.g-month{position:absolute;top:0;bottom:0;border-left:1px solid var(--line);padding:4px 8px;font:700 14px var(--font-d);white-space:nowrap;overflow:hidden}
+.g-month:nth-child(odd){background:var(--raise)}
+.g-week{position:absolute;top:0;bottom:0;border-left:1px solid var(--line2);font-size:11px;color:var(--ink3);padding:3px 0 0 3px;white-space:nowrap;overflow:hidden}
+.g-week.cur{color:var(--ink);font-weight:700}
+.g-kp{position:absolute;top:3px;transform:translateX(-1px);font-size:12px;line-height:20px;padding:0 7px;border-radius:0 10px 10px 0;background:var(--ink);color:var(--surface);white-space:nowrap;font-weight:700;border-left:2px solid var(--ink)}
+.g-kp.off{background:var(--surface);color:var(--ink);border:1px solid var(--ink);border-left:3px solid var(--ink)}
+.g-ld{position:absolute;top:3px;bottom:3px;text-align:center;font-size:11px;line-height:20px;border-radius:3px;margin-right:1px;overflow:hidden;color:var(--ink)}
+.l0{background:var(--l0)}.l1{background:var(--l1)}.l2{background:var(--l2)}.l3{background:var(--l3);font-weight:700}
+.g-body{position:relative}
+.g-row{position:relative;display:flex;height:var(--rh);border-bottom:1px solid var(--line2)}
+.g-lbl{position:sticky;left:0;z-index:4;width:var(--lw);flex:none;background:var(--surface);border-right:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 10px 0 12px;min-width:0}
+.g-row:hover .g-lbl{background:var(--raise)}
+.g-track{position:relative;width:var(--tw);flex:none;background-image:linear-gradient(to right,var(--line2) 1px,transparent 1px);background-size:calc(7*var(--px)) 100%}
+.g-group .g-lbl{background:var(--raise);font-family:var(--font-d);font-weight:700}
+.g-group .g-track{background-color:color-mix(in srgb,var(--raise) 70%,transparent)}
+.gtoggle{border:0;background:transparent;display:flex;align-items:center;gap:8px;text-align:left;font:700 15px var(--font-d);padding:0;min-width:0;flex:1}
+.gtoggle .chev{width:16px;flex:none;color:var(--ink3);transition:transform .15s}
+.gtoggle[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.gtoggle .gn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gcount{font:400 13px var(--font-b);color:var(--ink3);flex:none}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--cc);flex:none}
+.tname{border:0;background:transparent;padding:0;text-align:left;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.tname:hover{text-decoration:underline}
+.tb{display:flex;gap:5px;flex:none}
+.tag{font-size:11px;line-height:16px;padding:0 6px;border-radius:8px;border:1px solid var(--line);color:var(--ink2);white-space:nowrap}
+.tag.ok{border-color:var(--ok);color:var(--ok)}
+.tag.est{border-style:dashed}
+.tag.chk{border-style:dashed;border-color:var(--warn);color:var(--warn)}
+.tag.over{background:var(--bad);border-color:var(--bad);color:#fff}
+.tag.done{border-color:var(--ok);color:var(--ok)}
+.tag.prog{border-color:var(--acad);color:var(--acad)}
+.tag.warn{border-color:var(--bad);color:var(--bad)}
+.st-done .tname{color:var(--ink3);text-decoration:line-through}
+.bar{position:absolute;top:9px;height:18px;border-radius:5px;border:2px solid var(--cc);background:color-mix(in srgb,var(--cc) 20%,var(--surface));z-index:1;cursor:grab;touch-action:none;overflow:hidden}
+.bar.dash{border-style:dashed}
+.bar:active{cursor:grabbing}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--cc);opacity:.9;pointer-events:none}
+.bar .hl,.bar .hr{position:absolute;top:0;bottom:0;width:7px;cursor:ew-resize}
+.bar .hl{left:0}.bar .hr{right:0}
+.bar.late{border-color:var(--bad)}
+.bar.late .fill{background:var(--bad)}
+.st-done .bar{opacity:.55}
+.ms{position:absolute;top:10px;width:16px;height:16px;transform:rotate(45deg);border-radius:3px;border:2px solid var(--cc);background:var(--surface);z-index:1;cursor:grab;touch-action:none}
+.ms.dash{border-style:dashed}
+.ms.full{background:var(--cc)}
+.ms.late{border-color:var(--bad)}
+.blabel{position:absolute;top:0;height:100%;display:flex;align-items:center;font-size:12px;color:var(--ink2);white-space:nowrap;pointer-events:none;z-index:1}
+.mini{position:absolute;top:13px;height:10px;border-radius:3px;background:var(--cc);opacity:.55}
+.mini.d{top:11px;width:11px;height:11px;border-radius:2px;transform:rotate(45deg);opacity:.85}
+.g-over{position:absolute;top:0;left:var(--lw);width:var(--tw);height:100%;pointer-events:none;z-index:2}
+.today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.85}
+.key-line{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed var(--ink3)}
+.exam-band{position:absolute;top:0;bottom:0;background:var(--exam);opacity:.11}
+.arrows{position:absolute;left:0;top:0;overflow:visible}
+.arrows path{fill:none;stroke:var(--ink3);stroke-width:1.4;opacity:.8}
+.arrows path.bad{stroke:var(--bad);stroke-width:2;opacity:1}
+.empty{padding:40px 16px;text-align:center;color:var(--ink2)}
+
+/* panels */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow);min-width:0}
+.panel h2{font-size:20px;margin-bottom:4px}
+.panel h3{font-size:16px;margin:16px 0 6px}
+.panel p.hint{margin:0 0 10px;color:var(--ink2);font-size:14px}
+.stack{display:grid;gap:16px}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.wk{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line2);border-radius:8px;background:var(--raise)}
+.wk.st-over{border-color:var(--bad)}
+.chk{position:relative;flex:none;margin-top:2px}
+.chk input{position:absolute;opacity:0;width:22px;height:22px;margin:0;cursor:pointer}
+.chk .box{display:block;width:22px;height:22px;border:2px solid var(--ink3);border-radius:6px;background:var(--surface)}
+.chk input:checked+.box{background:var(--ok);border-color:var(--ok);box-shadow:inset 0 0 0 3px var(--surface)}
+.chk input:focus-visible+.box{outline:2px solid var(--focus);outline-offset:2px}
+.wk-main{flex:1;min-width:0}
+.linkish{border:0;background:transparent;padding:0;text-align:left;font-weight:700;font-size:15px}
+.linkish:hover{text-decoration:underline}
+.wk-meta{font-size:13px;color:var(--ink2);display:flex;gap:6px 12px;flex-wrap:wrap;margin-top:2px;align-items:center}
+.wk-prog{display:flex;gap:3px;flex:none}
+.pbtn{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:2px 6px;font-size:12px}
+.pbtn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.chip .dot{width:8px;height:8px}
+table.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-weight:700;color:var(--ink2);font-size:13px;padding:6px 8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px;border-bottom:1px solid var(--line2);vertical-align:top}
+.tblwrap{overflow-x:auto}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;margin:0}
+.kv dt{color:var(--ink2)}.kv dd{margin:0}
+.set{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.fld{display:grid;gap:4px;font-size:14px}
+.fld>span{color:var(--ink2);font-size:13px}
+.fld input,.fld select,.fld textarea{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 9px;width:100%}
+.fld textarea{min-height:70px;resize:vertical}
+.fld input[type=range]{padding:0;border:0;background:transparent}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bars{display:flex;align-items:flex-end;gap:3px;height:170px;position:relative;padding-top:6px;min-width:max-content}
+.bars .cap{position:absolute;left:0;right:0;border-top:2px dashed var(--ink);pointer-events:none}
+.bars .cap span{position:absolute;right:0;top:-20px;font-size:12px;background:var(--surface);padding:0 4px}
+.wbar{width:20px;flex:none;border:0;border-radius:3px 3px 0 0;padding:0;position:relative}
+.wbar.sel{outline:2px solid var(--ink)}
+.wbar.cur::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:3px;background:var(--ink)}
+.wbar.past{opacity:.5}
+.chart-wrap{overflow-x:auto;padding-bottom:22px}
+.mlabels{position:relative;height:18px;min-width:max-content;font-size:12px;color:var(--ink3)}
+.mlabels span{position:absolute;top:0;white-space:nowrap}
+.note{font-size:13px;color:var(--ink2)}
+.callout{border-left:4px solid var(--warn);background:var(--raise);padding:8px 12px;border-radius:0 8px 8px 0;font-size:14px;margin:8px 0}
+.callout.bad{border-color:var(--bad)}
+.callout.ok{border-color:var(--ok)}
+.day{display:grid;grid-template-columns:70px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2);font-size:14px}
+.day b{font-family:var(--font-d)}
+.tag2{display:inline-block;font-size:12px;padding:0 7px;border-radius:8px;background:var(--line2);color:var(--ink2);margin-left:6px}
+
+/* drawer */
+#drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:-20px 0 40px -30px rgba(0,0,0,.5);z-index:50;transform:translateX(102%);transition:transform .18s ease;display:flex;flex-direction:column}
+#drawer.open{transform:none}
+.dr-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.dr-head h2{font-size:20px}
+.dr-body{padding:14px 16px 24px;overflow:auto;display:grid;gap:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chipx{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:2px 4px 2px 10px;font-size:13px;background:var(--raise)}
+.chipx button{border:0;background:transparent;font-size:15px;line-height:1;padding:0 6px}
+.readout{font-size:14px;display:grid;gap:6px}
+.dr-actions{display:flex;gap:8px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:10px;font-size:14px;z-index:80;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw}
+#toast.show{opacity:1}
+.modal{position:fixed;inset:0;background:rgba(10,15,30,.55);z-index:90;display:grid;place-items:center;padding:16px}
+.modal .box{background:var(--surface);border-radius:12px;padding:18px;max-width:640px;width:100%;max-height:85vh;overflow:auto}
+.modal textarea{width:100%;min-height:220px;font:13px/1.4 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:8px;background:var(--raise);padding:8px}
+.uni-tbl input,.uni-tbl select{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:5px 7px;width:100%;min-width:110px}
+.uni-tbl input[type=checkbox]{width:auto;min-width:0}
+@media (max-width:900px){
+  .strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .metric{border-bottom:1px solid var(--line2)}
+}
+@media (max-width:720px){
+  .shell{padding:12px 10px 50px}
+  .tb{display:none}
+  .gcount{display:none}
+  .nextup{flex-direction:column;align-items:stretch;gap:8px}
+  .nu-list{grid-template-columns:1fr}
+  .metric:last-child{grid-column:1/-1}
+  .top-actions .btn{padding:6px 10px;font-size:13px}
+  .row2{grid-template-columns:1fr}
+  .wk{flex-wrap:wrap}
+  .wk-prog{width:100%;padding-left:32px}
+  .gantt{max-height:calc(100vh - 110px)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div>
+      <h1>Year 13 command centre</h1>
+      <p class="sub" id="todayLine"></p>
+    </div>
+    <div class="top-actions">
+      <span class="save" id="saveState" role="status" aria-live="polite"></span>
+      <button class="btn" data-act="export">Export backup</button>
+      <button class="btn" data-act="import">Import backup</button>
+      <button class="btn ghost" data-act="reset" id="resetBtn">Reset to starter plan</button>
+      <input type="file" id="fileIn" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+  <section class="strip" id="strip" aria-label="Progress summary"></section>
+  <section class="nextup" id="nextup" aria-label="Next actions"></section>
+
+  <nav class="tabs" role="tablist" aria-label="Planner views" id="tabs">
+    <button class="tab" role="tab" data-tab="timeline" aria-selected="true">Timeline</button>
+    <button class="tab" role="tab" data-tab="week" aria-selected="false">This week</button>
+    <button class="tab" role="tab" data-tab="load" aria-selected="false">Workload</button>
+    <button class="tab" role="tab" data-tab="plan" aria-selected="false">Auto-plan</button>
+    <button class="tab" role="tab" data-tab="confirm" aria-selected="false">Confirm dates</button>
+  </nav>
+
+  <section class="view" id="view-timeline">
+    <div class="toolbar">
+      <button class="btn primary" data-act="addTask">Add task</button>
+      <div class="seg" role="group" aria-label="Zoom">
+        <button data-act="zoom" data-z="0" aria-pressed="false">Year</button>
+        <button data-act="zoom" data-z="1" aria-pressed="true">Standard</button>
+        <button data-act="zoom" data-z="2" aria-pressed="false">Detail</button>
+      </div>
+      <button class="btn" data-act="today">Jump to today</button>
+      <button class="btn" data-act="expandAll">Expand all</button>
+      <button class="btn" data-act="collapseAll">Collapse all</button>
+      <button class="btn" data-act="arrows" id="arrowBtn" aria-pressed="true">Dependency arrows</button>
+    </div>
+    <div class="filters" id="filters">
+      <input type="search" id="fQ" placeholder="Search tasks" aria-label="Search tasks">
+      <select id="fSub" aria-label="Filter by subject or stream"></select>
+      <select id="fCat" aria-label="Filter by category">
+        <option value="">All categories</option><option value="academic">Academics</option><option value="university">University applications</option><option value="exam">Examinations</option><option value="personal">Personal</option>
+      </select>
+      <select id="fPri" aria-label="Filter by priority"><option value="">All priorities</option><option value="H">High</option><option value="M">Medium</option><option value="L">Low</option></select>
+      <select id="fSt" aria-label="Filter by status"><option value="">All statuses</option><option value="todo">Not Started</option><option value="prog">In Progress</option><option value="done">Completed</option><option value="over">Overdue</option></select>
+      <select id="fWin" aria-label="Filter by deadline"><option value="">Any deadline</option><option value="7">Due in 7 days</option><option value="14">Due in 14 days</option><option value="30">Due in 30 days</option></select>
+      <button class="btn small" data-act="clearFilters">Clear filters</button>
+    </div>
+    <div class="legend" aria-label="Legend">
+      <span class="cat-academic"><i class="sw"></i>Academics</span>
+      <span class="cat-university"><i class="sw"></i>University applications</span>
+      <span class="cat-exam"><i class="sw"></i>Examinations</span>
+      <span class="cat-personal"><i class="sw"></i>Personal</span>
+      <span><i class="sw solid"></i>Confirmed date</span>
+      <span><i class="sw dash"></i>Estimate or check this</span>
+      <span class="cat-academic"><i class="sw dia"></i>Milestone</span>
+      <span><i class="sw heat l1"></i><i class="sw heat l2"></i><i class="sw heat l3"></i>Weekly load: fine, busy, too much</span>
+    </div>
+    <div class="gantt" id="gantt" tabindex="-1"></div>
+    <p class="note">Drag a bar to reschedule it, drag its edges to change the start or end, or select it to edit. With a bar focused, use the left and right arrow keys to move it by a day (hold Shift for a week).</p>
+  </section>
+
+  <section class="view" id="view-week" hidden></section>
+  <section class="view" id="view-load" hidden></section>
+  <section class="view" id="view-plan" hidden></section>
+  <section class="view" id="view-confirm" hidden></section>
+</div>
+
+<aside id="drawer" aria-label="Edit task" aria-hidden="true"></aside>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="modalHost"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- helpers ---------- */
+const DAY=864e5;
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toN=iso=>{const p=String(iso).split('-').map(Number);return Date.UTC(p[0],p[1]-1,p[2])/DAY;};
+const toISO=n=>new Date(n*DAY).toISOString().slice(0,10);
+const LOC='en-GB';
+const fD=n=>new Date(n*DAY).toLocaleDateString(LOC,{timeZone:'UTC',day:'numeric',month:'short'});
+const fDY=n=>new Date(n*DAY).toLocaleDateString(LOC,{timeZone:'UTC',day:'numeric',month:'short',year:'numeric'});
+const fWD=n=>new Date(n*DAY).toLocaleDateString(LOC,{timeZone:'UTC',weekday:'short',day:'numeric',month:'short'});
+const nowN=()=>{const t=new Date();return Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())/DAY;};
+const monday=n=>n-((new Date(n*DAY).getUTCDay()+6)%7);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const r1=v=>Math.round(v*10)/10;
+let TODAY=nowN();
+const rel=n=>n===TODAY?'today':n===TODAY+1?'tomorrow':n<TODAY?(TODAY-n)+' days ago':'in '+(n-TODAY)+' days';
+
+/* ---------- constants ---------- */
+const GROUPS=[
+ {id:'ee',n:'Extended Essay',cat:'academic'},
+ {id:'tok',n:'Theory of Knowledge',cat:'academic'},
+ {id:'ia',n:'Internal assessments',cat:'academic'},
+ {id:'cas',n:'CAS',cat:'academic'},
+ {id:'gen',n:'School work and reviews',cat:'academic'},
+ {id:'exam',n:'Mocks, revision and IB exams',cat:'exam'},
+ {id:'res',n:'University research and shortlist',cat:'university'},
+ {id:'write',n:'Statements and essays',cat:'university'},
+ {id:'docs',n:'References, transcripts and tests',cat:'university'},
+ {id:'apply',n:'Applications by country',cat:'university'},
+ {id:'offers',n:'Scholarships, interviews and offers',cat:'university'},
+ {id:'move',n:'Visa, housing and enrolment',cat:'university'},
+ {id:'life',n:'Rest and personal',cat:'personal'}
+];
+const GCAT={};GROUPS.forEach(g=>GCAT[g.id]=g.cat);
+const CATS={academic:'Academics',university:'University applications',exam:'Examinations',personal:'Personal'};
+const PRI={H:'High',M:'Medium',L:'Low'};
+const STAT={todo:'Not Started',prog:'In Progress',done:'Completed',over:'Overdue'};
+const CONF={confirmed:{l:'Confirmed',c:'ok'},estimated:{l:'Estimate',c:'est'},check:{l:'Check this',c:'chk'}};
+const SUBS=['EE','TOK','CAS','Business Management HL','Economics HL','Indonesian HL','Maths AI SL','Computer Science SL','English Lang & Lit SL','All subjects','General applications','UK (UCAS)','Europe','China','Indonesia','USA','Scholarships','Personal'];
+const KEYIDS={a0:'UCAS 15 Oct',a4:'UCAS 13 Jan',ex_final:'IB exams start',ex_res:'Results (est.)'};
+const PXS=[3,6,12];
+
+/* ---------- starter plan ---------- */
+function T(id,g,n,sub,pri,s,e,h,o){
+  o=o||{};const ms=!e;
+  return {id:id,g:g,n:n,cat:o.cat||GCAT[g],sub:sub,pri:pri,s:s,e:e||s,p:0,h:h,dep:o.dep||[],ms:ms,conf:o.conf||'estimated',bt:o.bt||(ms?'none':'work'),note:o.note||''};
+}
+function seedTasks(){
+ const BM='Business Management HL',EC='Economics HL',ID='Indonesian HL',MA='Maths AI SL',CS='Computer Science SL',EN='English Lang & Lit SL',ALL='All subjects',GA='General applications',UK='UK (UCAS)';
+ const SCH='Your school sets this date. Ask your IB coordinator and replace the estimate.';
+ return [
+ // Extended Essay
+ T('ee1','ee','Confirm research question and outline with supervisor','EE','H','2026-09-21','2026-10-02',4,{conf:'check',note:SCH+' The Extended Essay has a new format for May 2027, so check the current guide with your coordinator.'}),
+ T('ee2','ee','Research and gather sources','EE','H','2026-10-05','2026-10-23',12,{dep:['ee1']}),
+ T('ee3','ee','Write the first full draft','EE','H','2026-10-26','2026-11-27',18,{dep:['ee2'],bt:'feedback'}),
+ T('ee4','ee','First draft to supervisor','EE','H','2026-11-30',null,0,{dep:['ee3'],conf:'check',note:SCH}),
+ T('ee5','ee','Revise after supervisor feedback','EE','H','2026-12-01','2027-01-08',10,{dep:['ee4']}),
+ T('ee6','ee','Extended Essay final submission to school','EE','H','2027-01-15',null,0,{dep:['ee5'],conf:'check',note:SCH}),
+ T('ee7','ee','Reflection form and viva voce','EE','M','2027-01-18','2027-01-29',2,{dep:['ee6']}),
+ // TOK
+ T('tok1','tok','Choose prescribed title and plan the essay','TOK','H','2026-09-21','2026-10-09',3,{conf:'check',note:'Ask your TOK teacher when the prescribed titles for your session are released and what the school deadline is.'}),
+ T('tok2','tok','Research and write first draft','TOK','H','2026-10-12','2026-11-13',9,{dep:['tok1'],bt:'feedback'}),
+ T('tok3','tok','Teacher feedback and revision','TOK','M','2026-11-16','2026-12-04',4,{dep:['tok2']}),
+ T('tok4','tok','TOK essay final submission to school','TOK','H','2026-12-11',null,0,{dep:['tok3'],conf:'check',note:SCH}),
+ // IAs
+ T('ia_bm','ia','Business Management HL: research project',BM,'H','2026-09-21','2026-11-13',12,{conf:'check',note:SCH}),
+ T('ia_ec','ia','Economics HL: portfolio of commentaries',EC,'H','2026-10-05','2026-12-04',12,{conf:'check',note:SCH}),
+ T('ia_ma','ia','Maths AI SL: mathematical exploration',MA,'H','2026-09-28','2026-11-27',12,{conf:'check',note:SCH}),
+ T('ia_cs','ia','Computer Science SL: internal assessment (new guide)',CS,'H','2026-10-05','2027-01-29',24,{conf:'check',note:'The Computer Science course is new for May 2027. Confirm the IA requirements and your school deadline with your teacher.'}),
+ T('ia_id','ia','Indonesian HL: individual oral',ID,'M','2027-01-11','2027-02-12',8,{conf:'check',note:SCH}),
+ T('ia_en','ia','English Lang & Lit SL: individual oral',EN,'M','2027-01-25','2027-02-26',8,{conf:'check',note:SCH}),
+ T('ia_up','ia','IB coursework upload deadline (placeholder)',ALL,'H','2027-03-12',null,0,{conf:'check',note:'Placeholder date. The IB sets moderation dates and your coordinator will give you the real one. Replace this.'}),
+ // CAS
+ T('cas1','cas','Plan CAS experiences and learning goals','CAS','M','2026-09-21','2026-10-02',1),
+ T('cas2','cas','Ongoing experiences: keep evidence and reflections','CAS','M','2026-10-05','2027-03-05',22,{dep:['cas1']}),
+ T('cas3','cas','CAS project: plan with your team','CAS','M','2026-10-05','2026-11-06',4,{dep:['cas1']}),
+ T('cas4','cas','CAS project: carry it out','CAS','M','2026-11-09','2027-02-12',12,{dep:['cas3']}),
+ T('cas5','cas','CAS mid-point check','CAS','M','2026-12-11',null,0,{conf:'check',note:SCH}),
+ T('cas6','cas','CAS final interview, all outcomes evidenced','CAS','H','2027-03-05',null,0,{dep:['cas4','cas2'],conf:'check',note:SCH}),
+ // School work
+ T('gen1','gen','School assignments and homework (ongoing)',ALL,'M','2026-09-21','2027-04-16',80),
+ T('gen2','gen','Academic progress review','All subjects','M','2026-10-30',null,1,{conf:'check',note:SCH}),
+ T('gen3','gen','Academic progress review','All subjects','M','2026-12-04',null,1,{conf:'check',note:SCH}),
+ T('gen4','gen','Academic progress review','All subjects','M','2027-02-19',null,1,{conf:'check',note:SCH}),
+ T('gen5','gen','Academic progress review','All subjects','M','2027-04-09',null,1,{conf:'check',note:SCH}),
+ // Exams
+ T('ex1','exam','Mock exam preparation',ALL,'H','2026-12-28','2027-01-22',18,{conf:'check',note:'Mock dates are set by your school. Replace with the real window.'}),
+ T('ex2','exam','Mock examinations',ALL,'H','2027-01-25','2027-02-05',14,{dep:['ex1'],conf:'check',note:'Mock dates are set by your school. Replace with the real window.'}),
+ T('ex3','exam','Mock review and revision plan reset',ALL,'H','2027-02-08','2027-02-12',3,{dep:['ex2']}),
+ T('rev_ec','exam','Economics HL: revision',EC,'H','2027-02-15','2027-04-22',32,{dep:['ex3']}),
+ T('rev_bm','exam','Business Management HL: revision',BM,'H','2027-02-15','2027-04-22',30,{dep:['ex3']}),
+ T('rev_id','exam','Indonesian HL: revision',ID,'H','2027-02-22','2027-04-22',20),
+ T('rev_ma','exam','Maths AI SL: revision',MA,'H','2027-03-01','2027-04-22',18),
+ T('rev_cs','exam','Computer Science SL: revision',CS,'H','2027-03-01','2027-04-22',18),
+ T('rev_en','exam','English Lang & Lit SL: revision',EN,'H','2027-03-08','2027-04-22',14),
+ T('ex_final','exam','IB final exams (May 2027 session)',ALL,'H','2027-04-23','2027-05-19',30,{dep:['rev_ec','rev_bm','rev_id','rev_ma','rev_cs','rev_en'],conf:'confirmed',note:'Window taken from the IB published May 2027 schedule: 23 April to 19 May 2027, with no exams on 1 May. Your own paper dates and start times come from your coordinator.'}),
+ T('ex_res','exam','IB results released (expected 6 July)',ALL,'H','2027-07-06',null,0,{dep:['ex_final'],conf:'estimated',note:'May session results have been released on 6 July in recent years. The IB confirms the exact date closer to the time.'}),
+ // University research
+ T('u1','res','Meet your university counsellor: get every internal deadline',GA,'H','2026-09-21','2026-09-25',1,{conf:'check',note:'Ask for: internal UCAS deadline, predicted grade timeline, reference process, transcript requests, and which countries the school supports.'}),
+ T('u2','res','Research courses: Business, Management, Technology, Business + Computer Science',GA,'H','2026-09-21','2026-10-09',8),
+ T('u_pg','res','Predicted grades agreed with school',GA,'H','2026-10-16',null,0,{conf:'check',note:SCH}),
+ T('u3','res','Check entry requirements at each university',GA,'H','2026-10-12','2026-11-06',9,{dep:['u2'],note:'Use each university\'s official page. Note the IB points, HL and SL subject rules, language rules and the date you checked. Do not rely on ranking sites or guessed odds.'}),
+ T('u4','res','Build shortlist: reach, target, safer (from verified requirements)',GA,'H','2026-11-09','2026-11-20',5,{dep:['u3']}),
+ T('u4m','res','Shortlist locked (UCAS allows up to five choices)',GA,'H','2026-11-20',null,0,{dep:['u4']}),
+ // Statements
+ T('p1','write','Brainstorm and evidence bank (activities, IAs, reading)',GA,'H','2026-10-05','2026-10-23',4),
+ T('p6','write','CV and activities list',GA,'M','2026-10-12','2026-10-30',3),
+ T('p2','write','UCAS statement: first draft',UK,'H','2026-10-26','2026-11-20',9,{dep:['p1'],bt:'app',note:'UCAS now uses three set questions with 4,000 characters shared between them and at least 350 per answer. One statement goes to all your UCAS choices.'}),
+ T('p5','write','US Common App essay and supplements (only if applying to the US)','USA','M','2026-10-26','2026-11-20',10,{dep:['p1'],conf:'check',bt:'app',note:'Check each US university\'s deadlines and whether you apply early or regular.'}),
+ T('p4','write','China and Indonesia essays and study plans (as required)',GA,'M','2026-11-16','2027-01-15',10,{dep:['p1'],conf:'check',bt:'app'}),
+ T('p3','write','UCAS statement: feedback and redrafts',UK,'H','2026-11-23','2026-12-11',6,{dep:['p2'],bt:'app'}),
+ // Documents and tests
+ T('r1','docs','Ask teachers and counsellor for references',GA,'H','2026-09-21','2026-10-09',2,{conf:'check',bt:'app',note:'Ask early and share a short summary of your activities and goals. Confirm with your counsellor how references work at your school.'}),
+ T('t1','docs','English test: check if required and book',GA,'M','2026-10-05','2026-10-16',1,{conf:'check',note:'Some universities accept IB English in place of IELTS or TOEFL. Check each one.'}),
+ T('r2','docs','Request transcripts and predicted grade letters',GA,'H','2026-10-12','2026-11-06',2,{dep:['r1'],bt:'app'}),
+ T('t2','docs','English test: prepare and sit (only if required)',GA,'M','2026-10-19','2026-11-27',10,{dep:['t1']}),
+ T('t3','docs','Entrance or admissions tests: check per course and prepare',GA,'M','2026-11-09','2027-01-15',10,{dep:['u3'],conf:'check',note:'Some courses need an extra test. Check each course page for test names and dates.'}),
+ // Applications
+ T('a0','apply','UCAS deadline: Oxford, Cambridge, medicine, dentistry, veterinary (only if relevant)',UK,'M','2026-10-15',null,0,{conf:'confirmed',note:'Official UCAS date: 18:00 UK time on 15 October 2026. Not relevant unless you apply to those courses.'}),
+ T('c1','apply','China: check portals, deadlines and documents per university','China','M','2026-10-19','2026-11-20',4,{conf:'check'}),
+ T('i1','apply','Indonesia: check admission routes for IB applicants and deadlines','Indonesia','M','2026-11-02','2026-12-11',4,{conf:'check'}),
+ T('e1','apply','Europe: check portals, deadlines and documents per university','Europe','M','2026-11-02','2026-12-11',5,{conf:'check'}),
+ T('a1','apply','UCAS: register, fill in sections, add choices',UK,'H','2026-11-23','2026-12-04',3,{dep:['u4m'],bt:'app'}),
+ T('us1','apply','US: complete Common App and university forms','USA','M','2026-11-23','2027-01-04',12,{dep:['p5'],conf:'check',bt:'app'}),
+ T('c2','apply','China: submit applications (deadlines vary)','China','M','2026-12-07','2027-03-31',6,{dep:['c1'],conf:'check',bt:'app'}),
+ T('a2','apply','UCAS: attach statement, school completes reference',UK,'H','2026-12-14','2026-12-18',3,{dep:['p3','a1'],bt:'app',conf:'check'}),
+ T('a3','apply','Submit UCAS application (target: school internal deadline)',UK,'H','2026-12-18',null,0,{dep:['a2'],conf:'check',note:'Schools usually set an internal deadline before the official one. Replace with your school\'s date.'}),
+ T('e2','apply','Europe: submit applications (deadlines vary)','Europe','M','2027-01-04','2027-03-31',8,{dep:['e1'],conf:'check',bt:'app'}),
+ T('i2','apply','Indonesia: submit applications (deadlines vary)','Indonesia','M','2027-01-11','2027-04-16',5,{dep:['i1'],conf:'check',bt:'app'}),
+ T('a4','apply','UCAS main deadline (18:00 UK time)',UK,'H','2027-01-13',null,0,{conf:'confirmed',note:'Official UCAS equal consideration deadline for 2027 entry: 18:00 UK time on 13 January 2027.'}),
+ // Money, interviews, offers
+ T('s1','offers','Scholarships: research options and deadlines','Scholarships','M','2026-10-12','2026-11-13',5,{conf:'check'}),
+ T('s2','offers','Scholarship applications and essays','Scholarships','M','2026-11-16','2027-02-26',12,{dep:['s1'],conf:'check',bt:'app'}),
+ T('iv1','offers','Interview preparation and interviews (if invited)',GA,'M','2026-12-14','2027-03-05',6),
+ T('of1','offers','Offers and decisions arrive (rolling, by country)',GA,'M','2027-01-18','2027-05-14',3,{conf:'check'}),
+ T('of2','offers','Reply to UCAS offers: firm and insurance choice',UK,'H','2027-06-03',null,0,{dep:['of1'],conf:'check',note:'Placeholder. Your reply date depends on when your decisions arrive. Check UCAS Track for your exact date.'}),
+ // Visa, housing
+ T('m1','move','Apply for accommodation (deadlines vary by university)',GA,'M','2027-05-24','2027-07-16',4,{conf:'check'}),
+ T('m2','move','Meet offer conditions: results day and university follow-up',GA,'H','2027-07-06','2027-07-16',3,{dep:['ex_res']}),
+ T('m3','move','Student visa application(s)',GA,'H','2027-07-19','2027-08-13',6,{dep:['m2'],conf:'check',note:'Timing depends on the country and on documents your university sends after your place is confirmed.'}),
+ T('m4','move','Enrolment: deposits, insurance, travel, orientation',GA,'M','2027-08-16','2027-08-27',6,{dep:['m3']}),
+ // Personal
+ T('l1','life','Weekly planning review (Sunday, 30 minutes)','Personal','M','2026-09-20','2027-04-18',12),
+ T('l2','life','Extracurriculars and hobbies (protect two slots a week)','Personal','L','2026-09-21','2027-04-16',0,{note:'Not counted toward study load. Keep it in the plan so it stays protected.'}),
+ T('l3','life','Winter break: protected rest','Personal','M','2026-12-26','2027-01-01',0,{conf:'check',note:'Replace with your school\'s real holiday dates.'})
+ ];
+}
+function seedState(){
+  const col={};GROUPS.forEach(g=>col[g.id]=true);col.ee=false;col.res=false;
+  return {v:1,updatedAt:Date.now(),settings:{weeknight:3,weekend:5,buffer:20,pace:5,bufWork:5,bufFeedback:14,bufApp:7},tasks:seedTasks(),collapsed:col,unis:[],confirm:{}};
+}
+
+/* ---------- state and saving ---------- */
+const KEY='ib-year13-planner-v1';
+let S=null;
+const ui={tab:'timeline',zoom:1,arrows:true,editId:null,selWeek:null,delArm:false,resetArm:false,showAllSug:false,showAllConf:false};
+const F={q:'',sub:'',cat:'',pri:'',st:'',win:''};
+function loadLocal(){
+  try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw);if(d&&Array.isArray(d.tasks)){S=fixState(d);}}}catch(e){}
+  if(!S){S=seedState();}
+}
+function fixState(d){
+  const base=seedState();
+  d.settings=Object.assign({},base.settings,d.settings||{});
+  d.collapsed=d.collapsed||{};d.unis=d.unis||[];d.confirm=d.confirm||{};
+  d.tasks.forEach(t=>{if(!GCAT[t.g])t.g='life';t.dep=Array.isArray(t.dep)?t.dep:[];t.p=+t.p||0;t.h=+t.h||0;t.conf=CONF[t.conf]?t.conf:'estimated';t.cat=CATS[t.cat]?t.cat:GCAT[t.g];t.e=t.e||t.s;});
+  return d;
+}
+let saveTimer=null,remote=null,pushing=false,pushAgain=false,syncMode='local';
+function setSave(txt){const el=$('#saveState');if(el)el.textContent=txt;}
+function touch(){S.updatedAt=Date.now();setSave('Saving');clearTimeout(saveTimer);saveTimer=setTimeout(persist,500);}
+async function persist(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  await pushRemote();
+  setSave(syncMode==='synced'?'Saved and synced to your account':'Saved in this browser');
+}
+async function pushRemote(){
+  if(!remote)return;
+  if(pushing){pushAgain=true;return;}
+  pushing=true;
+  try{await remote.set({json:JSON.stringify(S),updatedAt:S.updatedAt});syncMode='synced';}catch(e){syncMode='local';}
+  pushing=false;
+  if(pushAgain){pushAgain=false;await pushRemote();}
+}
+async function initRemote(){
+  try{
+    const c=window.claude;if(!c||typeof c.use!=='function')return;
+    const db=await c.use('db');const user=await c.use('user');
+    if(!db||!user)return;
+    const uid=await user.id();if(!uid)return;
+    remote=db.doc('data/users/'+uid+'/plan');
+    const snap=await remote.get();
+    if(snap.exists){
+      const d=snap.data();
+      if(d&&d.json){
+        const r=fixState(JSON.parse(d.json));
+        if((r.updatedAt||0)>(S.updatedAt||0)){S=r;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}syncMode='synced';refreshFilterOptions();renderAll();setSave('Loaded from your account');return;}
+      }
+    }
+    await pushRemote();
+    setSave(syncMode==='synced'?'Saved and synced to your account':'Saved in this browser');
+  }catch(e){remote=null;}
+}
+
+/* ---------- task logic ---------- */
+const byId=id=>S.tasks.find(t=>t.id===id);
+const gname=id=>(GROUPS.find(g=>g.id===id)||{n:''}).n;
+function status(t){if(t.p>=100)return 'done';if(toN(t.e)<TODAY)return 'over';if(t.p>0)return 'prog';return 'todo';}
+function hasFilter(){return !!(F.q||F.sub||F.cat||F.pri||F.st||F.win);}
+function passes(t){
+  if(F.q&&(t.n+' '+t.sub+' '+t.note).toLowerCase().indexOf(F.q.toLowerCase())<0)return false;
+  if(F.sub&&t.sub!==F.sub)return false;
+  if(F.cat&&t.cat!==F.cat)return false;
+  if(F.pri&&t.pri!==F.pri)return false;
+  if(F.st&&status(t)!==F.st)return false;
+  if(F.win){const e=toN(t.e);if(t.p>=100||e<TODAY||e>TODAY+ +F.win)return false;}
+  return true;
+}
+function range(){
+  let a=toN('2026-08-31'),b=toN('2027-08-31');
+  S.tasks.forEach(t=>{a=Math.min(a,toN(t.s));b=Math.max(b,toN(t.e)+7);});
+  return {a:monday(a),b:b};
+}
+const capacity=()=>{const s=S.settings;return Math.max(1,(5*s.weeknight+2*s.weekend)*(1-s.buffer/100));};
+function computeLoad(R){
+  const wk=new Map();
+  for(let w=R.a;w<=R.b;w+=7)wk.set(w,{w:w,h:0,dl:0,items:new Map()});
+  const cur=monday(TODAY);
+  const put=(w,t,x)=>{const o=wk.get(w);if(!o)return;o.h+=x;o.items.set(t.id,(o.items.get(t.id)||0)+x);};
+  S.tasks.forEach(t=>{
+    const s=toN(t.s),e=toN(t.e);
+    const we=wk.get(monday(e));if(we&&t.p<100)we.dl++;
+    const h=+t.h||0;if(h<=0)return;
+    const dur=e-s+1,rem=h*(1-(t.p||0)/100),remDays=Math.max(1,e-Math.max(s,TODAY)+1);
+    for(let d=s;d<=e;d++){put(monday(d),t,d<TODAY?h/dur:rem/remDays);}
+    if(e<TODAY&&rem>0.01)put(cur,t,rem);
+  });
+  return wk;
+}
+const lclass=(h,cap)=>{const r=h/cap;return r>1?3:r>.85?2:r>.5?1:0;};
+function pct(list){
+  const w=list.reduce((a,t)=>a+Math.max(+t.h||0,1),0);
+  const d=list.reduce((a,t)=>a+Math.max(+t.h||0,1)*(t.p||0)/100,0);
+  return w?Math.round(d/w*100):0;
+}
+const PR={H:0,M:1,L:2};
+function dueWithin(n){return S.tasks.filter(t=>t.p<100&&toN(t.e)>=TODAY&&toN(t.e)<=TODAY+n).sort((a,b)=>toN(a.e)-toN(b.e));}
+function depConflict(t){return (t.dep||[]).map(byId).filter(p=>p&&toN(t.s)<toN(p.e));}
+function bufferDays(t){const b=S.settings;if(t.ms||t.bt==='none')return 0;return t.bt==='feedback'?b.bufFeedback:t.bt==='app'?b.bufApp:b.bufWork;}
+function suggest(t){
+  if(t.ms||t.p>=100)return null;
+  const e=toN(t.e),h=+t.h||0,buf=bufferDays(t);
+  const finish=Math.max(toN(t.s)+1,e-buf);
+  const dur=Math.max(3,Math.ceil(h/S.settings.pace*7));
+  let start=finish-dur+1,why=[];
+  const depEnd=(t.dep||[]).map(byId).filter(Boolean).reduce((m,p)=>Math.max(m,toN(p.e)),-1e9);
+  if(depEnd>-1e8&&start<depEnd){start=depEnd;why.push('starts after its prerequisite ends');}
+  const late=start<TODAY;
+  if(late){start=TODAY;why.push('the ideal start has already passed');}
+  if(start>finish)start=finish;
+  return {start:start,finish:finish,dur:dur,buf:buf,late:late,why:why};
+}
+
+/* ---------- rendering: shell ---------- */
+function renderStrip(){
+  const ib=S.tasks.filter(t=>t.cat==='academic'||t.cat==='exam'),un=S.tasks.filter(t=>t.cat==='university');
+  const over=S.tasks.filter(t=>status(t)==='over').length,d7=dueWithin(7).length;
+  const ex=byId('ex_final'),uc=byId('a4');
+  const dEx=ex?toN(ex.s)-TODAY:null,dUc=uc?toN(uc.s)-TODAY:null;
+  const done=l=>l.filter(t=>t.p>=100).length;
+  $('#strip').innerHTML=
+   '<div class="metric cat-academic"><span class="m-lbl">IB work complete</span><span class="m-num">'+pct(ib)+'%</span><span class="m-sub">'+done(ib)+' of '+ib.length+' items done</span><div class="meter"><i style="width:'+pct(ib)+'%"></i></div></div>'+
+   '<div class="metric cat-university"><span class="m-lbl">Applications complete</span><span class="m-num">'+pct(un)+'%</span><span class="m-sub">'+done(un)+' of '+un.length+' items done</span><div class="meter"><i style="width:'+pct(un)+'%"></i></div></div>'+
+   '<div class="metric"><span class="m-lbl">IB exams begin in</span><span class="m-num">'+(dEx==null?'n/a':Math.max(dEx,0)+'<small>days</small>')+'</span><span class="m-sub">'+(ex?fDY(toN(ex.s)):'Add the exam task')+'</span></div>'+
+   '<div class="metric"><span class="m-lbl">UCAS main deadline in</span><span class="m-num">'+(dUc==null?'n/a':Math.max(dUc,0)+'<small>days</small>')+'</span><span class="m-sub">'+(uc?fDY(toN(uc.s))+', 18:00 UK time':'Add the UCAS task')+'</span></div>'+
+   '<div class="metric"><span class="m-lbl">Next 7 days</span><span class="m-num">'+d7+'<small>due</small></span><span class="m-sub '+(over?'m-warn':'')+'">'+(over?over+' overdue':'Nothing overdue')+'</span></div>';
+  $('#todayLine').textContent=fWD(TODAY)+' '+new Date(TODAY*DAY).getUTCFullYear()+'. Edit anything, changes save automatically.';
+  const cnt=over?'<span class="cnt">'+over+'</span>':'';
+  const pt=$('#tabs [data-tab="plan"]');pt.innerHTML='Auto-plan'+cnt;
+}
+function nextActions(){
+  return S.tasks.filter(t=>t.p<100&&!t.ms&&toN(t.s)<=TODAY+10&&toN(t.e)>=TODAY-30)
+    .sort((a,b)=>(status(a)==='over'?-1:0)-(status(b)==='over'?-1:0)||PR[a.pri]-PR[b.pri]||toN(a.e)-toN(b.e)).slice(0,3);
+}
+function renderNext(){
+  const list=nextActions();
+  const unsure=S.tasks.filter(t=>t.conf==='check'&&t.p<100&&toN(t.e)<=TODAY+45).length;
+  $('#nextup').innerHTML='<h2>Start here this week</h2><div class="nu-list">'+
+    (list.length?list.map(t=>'<button class="nu cat-'+t.cat+'" data-act="edit" data-id="'+t.id+'" title="'+esc(t.n)+'"><b>'+esc(t.n)+'</b><span>'+(status(t)==='over'?'Overdue since '+fD(toN(t.e)):'Finish '+rel(toN(t.e))+', about '+t.h+' h')+'</span></button>').join(''):'<span class="note">Nothing urgent. Check the Auto-plan tab for what comes next.</span>')+
+    '</div>'+(unsure?'<button class="btn" data-act="tab" data-tab="confirm">'+unsure+' near-term dates to confirm</button>':'');
+}
+
+/* ---------- rendering: gantt ---------- */
+let G={R:null,px:6,LW:330,RH:36};
+const narrow=()=>window.innerWidth<720;
+function buildRows(){
+  const out=[],filt=hasFilter();
+  GROUPS.forEach(g=>{
+    const list=S.tasks.filter(t=>t.g===g.id&&passes(t)).sort((a,b)=>toN(a.s)-toN(b.s)||toN(a.e)-toN(b.e));
+    if(!list.length)return;
+    const open=filt||!S.collapsed[g.id];
+    out.push({type:'group',g:g,list:list,open:open});
+    if(open)list.forEach(t=>out.push({type:'task',t:t}));
+  });
+  return out;
+}
+function renderGantt(){
+  const host=$('#gantt');const keep={l:host.scrollLeft,t:host.scrollTop};
+  const R=range(),px=PXS[ui.zoom],RH=36,LW=narrow()?172:330,days=R.b-R.a+1,TW=days*px;
+  G={R:R,px:px,LW:LW,RH:RH};
+  const load=computeLoad(R),cap=capacity(),rows=buildRows();
+  host.style.setProperty('--px',px+'px');host.style.setProperty('--tw',TW+'px');host.style.setProperty('--lw',LW+'px');host.style.setProperty('--rh',RH+'px');
+  let h='<div class="g-canvas">';
+  // head
+  h+='<div class="g-head">';
+  h+='<div class="g-hr r-month"><div class="g-corner">Task</div><div class="g-ht">';
+  for(let d=R.a;d<=R.b;){
+    const dt=new Date(d*DAY),y=dt.getUTCFullYear(),m=dt.getUTCMonth();
+    const nm=Date.UTC(y,m+1,1)/DAY,end=Math.min(nm-1,R.b);
+    const lab=dt.toLocaleDateString(LOC,{timeZone:'UTC',month:'short'})+((m===0||d===R.a)?' '+y:'');
+    h+='<div class="g-month" style="left:'+(d-R.a)*px+'px;width:'+(end-d+1)*px+'px">'+((end-d+1)*px>=36?lab:'')+'</div>';
+    d=end+1;
+  }
+  h+='</div></div>';
+  h+='<div class="g-hr r-week"><div class="g-corner">Week starting</div><div class="g-ht">';
+  const curW=monday(TODAY);
+  for(let w=R.a;w<=R.b;w+=7){
+    let lab='';
+    if(px>=12)lab=fD(w);else if(px>=6)lab=String(new Date(w*DAY).getUTCDate());else if(((w-R.a)/7)%2===0)lab=String(new Date(w*DAY).getUTCDate());
+    h+='<div class="g-week'+(w===curW?' cur':'')+'" style="left:'+(w-R.a)*px+'px;width:'+7*px+'px">'+lab+'</div>';
+  }
+  h+='</div></div>';
+  h+='<div class="g-hr r-key"><div class="g-corner">Key dates</div><div class="g-ht">';
+  h+='<div class="g-kp" style="left:'+(TODAY-R.a)*px+'px">Today</div>';
+  Object.keys(KEYIDS).forEach(id=>{const t=byId(id);if(!t)return;const x=(toN(t.s)-R.a)*px;h+='<div class="g-kp off" style="left:'+x+'px" title="'+esc(t.n)+', '+fDY(toN(t.s))+'">'+KEYIDS[id]+'</div>';});
+  h+='</div></div>';
+  h+='<div class="g-hr r-load"><div class="g-corner" title="Estimated study hours per week compared with your capacity of '+r1(cap)+' hours">Weekly load</div><div class="g-ht">';
+  load.forEach(o=>{
+    const c=lclass(o.h,cap);
+    h+='<div class="g-ld l'+c+'" style="left:'+(o.w-R.a)*px+'px;width:'+(7*px-1)+'px" title="Week of '+fD(o.w)+': about '+Math.round(o.h)+' h planned, capacity '+Math.round(cap)+' h, '+o.dl+' deadline'+(o.dl===1?'':'s')+'">'+(px>=6?Math.round(o.h):'')+'</div>';
+  });
+  h+='</div></div></div>';
+  // body
+  h+='<div class="g-body">';
+  const idx={};
+  if(!rows.length){h+='<div class="empty">No tasks match these filters. Clear the filters or add a task.</div>';}
+  rows.forEach((r,i)=>{
+    if(r.type==='group'){
+      const g=r.g,done=r.list.filter(t=>t.p>=100).length;
+      h+='<div class="g-row g-group"><div class="g-lbl"><button class="gtoggle" data-act="toggleG" data-g="'+g.id+'" aria-expanded="'+r.open+'"><svg class="chev" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="gn">'+esc(g.n)+'</span></button><span class="gcount">'+done+'/'+r.list.length+'</span></div><div class="g-track">';
+      if(!r.open){r.list.forEach(t=>{
+        const s=toN(t.s),e=toN(t.e);
+        if(t.ms)h+='<i class="mini d cat-'+t.cat+'" style="left:'+((s-R.a+.5)*px-6)+'px"></i>';
+        else h+='<i class="mini cat-'+t.cat+'" style="left:'+(s-R.a)*px+'px;width:'+Math.max((e-s+1)*px,3)+'px"></i>';
+      });}
+      h+='</div></div>';
+    }else{
+      const t=r.t;idx[t.id]=i;
+      const st=status(t),s=toN(t.s),e=toN(t.e),cf=CONF[t.conf];
+      const bad=depConflict(t).length>0;
+      h+='<div class="g-row st-'+st+'"><div class="g-lbl cat-'+t.cat+'"><span class="dot"></span><button class="tname" data-act="edit" data-id="'+t.id+'" title="'+esc(t.n)+'">'+esc(t.n)+'</button><span class="tb">'+
+        (bad?'<span class="tag warn" title="Starts before a prerequisite ends">Order</span>':'')+
+        (st==='over'?'<span class="tag over">Overdue</span>':st==='done'?'<span class="tag done">Done</span>':(e-TODAY>=0&&e-TODAY<=7)?'<span class="tag warn">Due in '+(e-TODAY)+' d</span>':st==='prog'?'<span class="tag prog">In progress</span>':'')+
+        '<span class="tag '+cf.c+'">'+cf.l+'</span></span></div><div class="g-track cat-'+t.cat+'">';
+      const dash=t.conf==='confirmed'?'':' dash',late=st==='over'?' late':'';
+      if(t.ms){
+        const cx=(s-R.a+.5)*px;
+        h+='<div class="ms'+dash+late+(t.p>=100?' full':'')+'" style="left:'+(cx-8)+'px" tabindex="0" role="button" aria-label="'+esc(t.n)+', milestone on '+fDY(s)+'" data-id="'+t.id+'"></div>';
+        h+='<span class="blabel" style="left:'+(cx+16)+'px">'+fD(s)+'</span>';
+      }else{
+        const w=Math.max((e-s+1)*px,8);
+        h+='<div class="bar'+dash+late+'" style="left:'+(s-R.a)*px+'px;width:'+w+'px" tabindex="0" role="button" aria-label="'+esc(t.n)+', '+fD(s)+' to '+fD(e)+', '+t.p+' percent done" data-id="'+t.id+'"><i class="fill" style="width:'+t.p+'%"></i><b class="hl"></b><b class="hr"></b></div>';
+        h+='<span class="blabel" style="left:'+((e-R.a+1)*px+8)+'px">'+(t.p>0?t.p+'% done, ':'')+(t.h?t.h+' h':fD(s)+' to '+fD(e))+'</span>';
+      }
+      h+='</div></div>';
+    }
+  });
+  // overlay
+  h+='<div class="g-over" style="height:'+rows.length*RH+'px">';
+  const ex=byId('ex_final');
+  if(ex){h+='<div class="exam-band" style="left:'+(toN(ex.s)-R.a)*px+'px;width:'+(toN(ex.e)-toN(ex.s)+1)*px+'px"></div>';}
+  ['a0','a4'].forEach(id=>{const t=byId(id);if(t)h+='<div class="key-line" style="left:'+((toN(t.s)-R.a+.5)*px)+'px"></div>';});
+  h+='<div class="today-line" style="left:'+((TODAY-R.a+.5)*px-1)+'px"></div>';
+  if(ui.arrows)h+=arrowsSVG(rows,idx,R,px,RH,TW);
+  h+='</div></div></div>';
+  host.innerHTML=h;
+  host.scrollLeft=keep.l;host.scrollTop=keep.t;
+}
+function arrowsSVG(rows,idx,R,px,RH,TW){
+  const sx=t=>t.ms?(toN(t.s)-R.a+.5)*px-8:(toN(t.s)-R.a)*px;
+  const ex=t=>t.ms?(toN(t.e)-R.a+.5)*px+8:Math.max((toN(t.e)-R.a+1)*px,(toN(t.s)-R.a)*px+8);
+  let p='';
+  rows.forEach(r=>{
+    if(r.type!=='task')return;const t=r.t;
+    (t.dep||[]).forEach(pid=>{
+      if(idx[pid]===undefined)return;const q=byId(pid);if(!q)return;
+      const x1=ex(q),x2=sx(t),y1=idx[pid]*RH+RH/2,y2=idx[t.id]*RH+RH/2,g=7;
+      const bad=toN(t.s)<toN(q.e);let d;
+      if(x2>=x1+g*2)d='M'+x1+' '+y1+' H'+(x1+g)+' V'+y2+' H'+(x2-2);
+      else{const ym=y2>y1?y1+RH/2:y1-RH/2;d='M'+x1+' '+y1+' H'+(x1+g)+' V'+ym+' H'+(x2-g)+' V'+y2+' H'+(x2-2);}
+      p+='<path class="'+(bad?'bad':'')+'" d="'+d+'" marker-end="url(#ah'+(bad?'b':'')+')"/>';
+    });
+  });
+  return '<svg class="arrows" width="'+TW+'" height="'+rows.length*RH+'" aria-hidden="true"><defs><marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8z" style="fill:var(--ink3);stroke:none"/></marker><marker id="ahb" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8z" style="fill:var(--bad);stroke:none"/></marker></defs>'+p+'</svg>';
+}
+
+/* ---------- rendering: this week ---------- */
+function taskItem(t){
+  const st=status(t),e=toN(t.e),rem=r1((+t.h||0)*(1-(t.p||0)/100));
+  return '<li class="wk st-'+st+'"><label class="chk"><input type="checkbox" data-act="toggle" data-id="'+t.id+'" '+(t.p>=100?'checked':'')+' aria-label="Mark '+esc(t.n)+' as complete"><span class="box"></span></label>'+
+   '<div class="wk-main"><button class="linkish" data-act="edit" data-id="'+t.id+'">'+esc(t.n)+'</button><div class="wk-meta"><span class="chip cat-'+t.cat+'"><i class="dot"></i>'+esc(t.sub)+'</span><span>'+(t.ms?'On ':'Due ')+fWD(e)+' ('+rel(e)+')</span>'+(rem>0?'<span>about '+rem+' h left</span>':'')+'<span class="tag '+CONF[t.conf].c+'">'+CONF[t.conf].l+'</span><span class="tag '+(st==='over'?'over':st==='done'?'done':st==='prog'?'prog':'')+'">'+STAT[st]+'</span></div></div>'+
+   (t.ms?'':'<div class="wk-prog" role="group" aria-label="Set progress">'+[0,25,50,75,100].map(v=>'<button class="pbtn" data-act="setp" data-id="'+t.id+'" data-v="'+v+'" aria-pressed="'+(Math.abs((t.p||0)-v)<12.5&&(v===100?t.p>=100:v===0?t.p<12.5:true))+'">'+v+'%</button>').join('')+'</div>')+'</li>';
+}
+function windowHours(a,b){
+  let tot=0;
+  S.tasks.forEach(t=>{
+    const h=+t.h||0;if(h<=0)return;
+    const s=toN(t.s),e=toN(t.e),dur=e-s+1,rem=h*(1-(t.p||0)/100),remDays=Math.max(1,e-Math.max(s,TODAY)+1);
+    for(let d=Math.max(s,a);d<=Math.min(e,b);d++)tot+=d<TODAY?h/dur:rem/remDays;
+    if(e<TODAY&&rem>0.01&&a<=TODAY&&TODAY<=b)tot+=rem;
+  });
+  return tot;
+}
+function renderWeek(){
+  const a=TODAY,b=TODAY+6,cap=capacity(),hrs=windowHours(a,b);
+  const open=S.tasks.filter(t=>t.p<100);
+  const overdue=open.filter(t=>toN(t.e)<TODAY).sort((x,y)=>toN(x.e)-toN(y.e));
+  const focus=open.filter(t=>toN(t.e)>=TODAY&&toN(t.s)<=b&&!t.ms).sort((x,y)=>PR[x.pri]-PR[y.pri]||toN(x.e)-toN(y.e)).slice(0,6);
+  const rest=open.filter(t=>toN(t.e)>=TODAY&&toN(t.s)<=b+7&&focus.indexOf(t)<0&&!/^(gen1|l1|l2)$/.test(t.id)).sort((x,y)=>toN(x.e)-toN(y.e)||PR[x.pri]-PR[y.pri]).slice(0,10);
+  const doneRecent=S.tasks.filter(t=>t.p>=100&&toN(t.e)>=TODAY-7);
+  const s=S.settings;
+  const days=[
+    ['Mon to Thu','School day. Rest and activities until about 18:30. Study block 19:00 to '+clock(19,s.weeknight)+' on your top task from the list.'],
+    ['Fri','Lighter day. Up to '+r1(Math.min(s.weeknight,1.5))+' h to clear small items, then switch off.'],
+    ['Sat','Morning block, '+r1(s.weekend)+' h from 09:30 on applications or IB coursework. Afternoon and evening free.'],
+    ['Sun','Slow morning. '+r1(s.weekend)+' h block after lunch, then 30 minutes for the weekly review: tick off tasks, check next week, message any teacher you need.']
+  ];
+  $('#view-week').innerHTML='<div class="grid2">'+
+   '<div class="stack"><div class="panel"><h2>Next 7 days</h2><p class="hint">'+fWD(a)+' to '+fWD(b)+'. About '+Math.round(hrs)+' h planned against a weekly capacity of '+Math.round(cap)+' h.</p>'+
+    (overdue.length?'<div class="callout bad"><b>'+overdue.length+' overdue.</b> Finish or reschedule these first.</div><ul class="list">'+overdue.slice(0,5).map(taskItem).join('')+'</ul>':'')+
+    '<h3>Focus on these</h3>'+(focus.length?'<ul class="list">'+focus.map(taskItem).join('')+'</ul>':'<p class="note">No tasks are active in the next 7 days. Check the Auto-plan tab for what to start early.</p>')+'</div>'+
+    '<div class="panel"><h2>Also coming up</h2><ul class="list">'+(rest.length?rest.map(taskItem).join(''):'<li class="note">Nothing else in the next two weeks.</li>')+'</ul>'+
+    (doneRecent.length?'<h3>Finished recently</h3><ul class="list">'+doneRecent.map(taskItem).join('')+'</ul>':'')+'</div></div>'+
+   '<div class="stack"><div class="panel"><h2>A realistic weekly rhythm</h2><p class="hint">Built from your capacity settings on the Workload tab. School, rest and activities come first, and '+s.buffer+'% of study time is kept free for delays.</p>'+
+    days.map(d=>'<div class="day"><b>'+d[0]+'</b><span>'+d[1]+'</span></div>').join('')+
+    '<p class="note" style="margin-top:10px">Study time each week: about '+r1(5*s.weeknight+2*s.weekend)+' h, of which about '+r1(cap)+' h is planned and the rest is buffer.</p></div></div></div>';
+}
+function clock(start,hrs){const t=start*60+Math.round(hrs*60);return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0');}
+
+/* ---------- rendering: workload ---------- */
+function renderLoad(){
+  const R=range(),load=computeLoad(R),cap=capacity(),arr=Array.from(load.values());
+  const max=Math.max(cap*1.6,...arr.map(o=>o.h))*1.05,H=160,cur=monday(TODAY),fw=cur+((TODAY-cur)>=5?7:0);
+  if(ui.selWeek==null||!load.has(ui.selWeek))ui.selWeek=fw;
+  const sel=load.get(ui.selWeek);
+  const bars=arr.map(o=>{const c=lclass(o.h,cap),ht=Math.max(3,o.h/max*H);
+    return '<button class="wbar l'+c+(o.w===ui.selWeek?' sel':'')+(o.w===cur?' cur':'')+(o.w<cur?' past':'')+'" style="height:'+ht+'px" data-act="selWeek" data-w="'+o.w+'" aria-label="Week of '+fD(o.w)+', '+Math.round(o.h)+' hours" title="Week of '+fD(o.w)+': '+Math.round(o.h)+' h, '+o.dl+' deadline'+(o.dl===1?'':'s')+'"></button>';}).join('');
+  let ml='',lastM=-1;
+  arr.forEach((o,i)=>{const m=new Date((o.w+3)*DAY).getUTCMonth();if(m!==lastM){ml+='<span style="left:'+(i*23)+'px">'+new Date((o.w+3)*DAY).toLocaleDateString(LOC,{timeZone:'UTC',month:'short'})+'</span>';lastM=m;}});
+  const items=Array.from(sel.items.entries()).map(function(kv){return {t:byId(kv[0]),h:kv[1]};}).filter(x=>x.t&&x.h>=0.3).sort((a,b)=>b.h-a.h);
+  const heavy=arr.filter(o=>o.w>=fw&&o.h>cap).sort((a,b)=>b.h-a.h).slice(0,5);
+  const light=arr.filter(o=>o.w>=fw&&o.w<toN('2027-01-25')).sort((a,b)=>a.h-b.h).slice(0,4).sort((a,b)=>a.w-b.w);
+  const s=S.settings;
+  $('#view-load').innerHTML='<div class="grid2"><div class="stack">'+
+   '<div class="panel"><h2>Weekly workload</h2><p class="hint">Estimated hours per week from your tasks, compared with the hours you can realistically give (dashed line). Select a week to see what is driving it. Past weeks show what was planned, and overdue work is added to the current week.</p>'+
+   '<div class="chart-wrap"><div class="bars" style="min-width:'+arr.length*23+'px">'+bars+'<div class="cap" style="bottom:'+(cap/max*H)+'px"><span>Capacity '+Math.round(cap)+' h</span></div></div><div class="mlabels" style="min-width:'+arr.length*23+'px">'+ml+'</div></div></div>'+
+   '<div class="panel"><h2>Week of '+fD(ui.selWeek)+'</h2><p class="hint">About '+Math.round(sel.h)+' h planned, capacity '+Math.round(cap)+' h, '+sel.dl+' open deadline'+(sel.dl===1?'':'s')+' that week.</p>'+
+   (sel.h>cap?'<div class="callout bad">This week is over capacity by about '+Math.round(sel.h-cap)+' h. Move something earlier, shorten a task, or drop a low-priority item.</div>':'<div class="callout ok">This week fits your capacity.</div>')+
+   '<ul class="list">'+items.slice(0,8).map(x=>'<li class="wk"><div class="wk-main"><button class="linkish" data-act="edit" data-id="'+x.t.id+'">'+esc(x.t.n)+'</button><div class="wk-meta"><span>'+r1(x.h)+' h this week</span><span>due '+fD(toN(x.t.e))+'</span></div></div></li>').join('')+(items.length?'':'<li class="note">No hours planned this week.</li>')+'</ul></div></div>'+
+   '<div class="stack"><div class="panel"><h2>Your capacity</h2><p class="hint">Be honest here. The planner uses these numbers to flag weeks that are too full.</p><div class="set">'+
+   setField('weeknight','Study hours per weeknight (Mon to Fri)',s.weeknight,0,6,.5)+setField('weekend','Study hours per weekend day',s.weekend,0,10,.5)+setField('buffer','Buffer for delays and rest (%)',s.buffer,0,50,5)+
+   '</div><p class="note" style="margin-top:10px">Planned capacity: about <b>'+Math.round(cap)+' h a week</b> after the buffer.</p></div>'+
+   '<div class="panel"><h2>Weeks that need attention</h2>'+(heavy.length?'<ul class="list">'+heavy.map(o=>'<li class="wk"><div class="wk-main"><button class="linkish" data-act="selWeek" data-w="'+o.w+'">Week of '+fD(o.w)+'</button><div class="wk-meta"><span>about '+Math.round(o.h)+' h against '+Math.round(cap)+' h</span><span>'+o.dl+' deadline'+(o.dl===1?'':'s')+'</span></div></div></li>').join('')+'</ul>':'<p class="note">No upcoming weeks are over capacity.</p>')+
+   '<h3>Quiet weeks to work ahead</h3><p class="hint">Good windows to start applications before mocks and revision take over.</p>'+(light.length?'<ul class="list">'+light.map(o=>'<li class="wk"><div class="wk-main"><button class="linkish" data-act="selWeek" data-w="'+o.w+'">Week of '+fD(o.w)+'</button><div class="wk-meta"><span>about '+Math.round(o.h)+' h planned, room for about '+Math.max(0,Math.round(cap-o.h))+' h more</span></div></div></li>').join('')+'</ul>':'<p class="note">No quiet weeks found before mocks.</p>')+'</div></div></div>';
+}
+function setField(k,label,v,min,max,step){return '<label class="fld"><span>'+label+'</span><input type="number" data-set="'+k+'" value="'+v+'" min="'+min+'" max="'+max+'" step="'+step+'"></label>';}
+
+/* ---------- rendering: auto-plan ---------- */
+function attention(){
+  const out=[];
+  S.tasks.forEach(t=>{
+    if(t.p>=100)return;const st=status(t),s=toN(t.s),e=toN(t.e);
+    if(st==='over')out.push({t:t,why:'Overdue since '+fD(e),rank:0});
+    else if(e-TODAY<=7)out.push({t:t,why:'Due '+rel(e),rank:1});
+    else if(s<TODAY&&!t.p&&!t.ms)out.push({t:t,why:'Should have started '+rel(s).replace(' ago','')+' ago, no progress yet',rank:2});
+    else if(s>=TODAY&&s-TODAY<=7&&t.pri==='H'&&!t.ms)out.push({t:t,why:'High priority, starts '+rel(s),rank:3});
+  });
+  return out.sort((a,b)=>a.rank-b.rank||toN(a.t.e)-toN(b.t.e));
+}
+function miniList(list,extra){return list.length?'<ul class="list">'+list.map(t=>'<li class="wk"><div class="wk-main"><button class="linkish" data-act="edit" data-id="'+t.id+'">'+esc(t.n)+'</button><div class="wk-meta"><span class="chip cat-'+t.cat+'"><i class="dot"></i>'+esc(t.sub)+'</span><span>'+(extra?extra(t):fWD(toN(t.e)))+'</span><span class="tag '+CONF[t.conf].c+'">'+CONF[t.conf].l+'</span></div></div></li>').join('')+'</ul>':'<p class="note">Nothing here.</p>';}
+function sugList(){return S.tasks.map(t=>({t:t,g:suggest(t)})).filter(x=>x.g&&x.g.start<=toN(x.t.s)-3).sort((a,b)=>toN(a.t.e)-toN(b.t.e));}
+function renderPlan(){
+  const R=range(),load=computeLoad(R),cap=capacity(),cur=monday(TODAY),s=S.settings;
+  const att=attention();
+  const d7=dueWithin(7),d14=dueWithin(14).filter(t=>toN(t.e)>TODAY+7),d30=dueWithin(30).filter(t=>toN(t.e)>TODAY+14);
+  const heavy=Array.from(load.values()).filter(o=>o.w>=cur&&o.h>cap).sort((a,b)=>a.w-b.w);
+  const blocked=S.tasks.filter(t=>t.p<100&&(t.dep||[]).some(d=>{const q=byId(d);return q&&q.p<100;})&&toN(t.s)<=TODAY+21);
+  const conflicts=S.tasks.filter(t=>t.p<100&&depConflict(t).length);
+  const mockStart=byId('ex1')?toN(byId('ex1').s):toN('2026-12-28');
+  const late=S.tasks.filter(t=>t.cat==='university'&&t.p<100&&!t.ms&&toN(t.s)>=mockStart&&toN(t.s)<toN('2027-04-23')).sort((a,b)=>toN(a.s)-toN(b.s));
+  const fw=cur+((TODAY-cur)>=5?7:0);
+  const light=Array.from(load.values()).filter(o=>o.w>=fw&&o.w<mockStart).sort((a,b)=>a.h-b.h).slice(0,3).sort((a,b)=>a.w-b.w);
+  let sug=sugList();
+  const total=sug.length;if(!ui.showAllSug)sug=sug.slice(0,10);
+  $('#view-plan').innerHTML='<div class="grid2"><div class="stack">'+
+   '<div class="panel"><h2>Needs attention now</h2><p class="hint">Overdue work, things due this week, missed starts and high priority tasks about to begin.</p>'+
+    (att.length?'<ul class="list">'+att.slice(0,8).map(a=>'<li class="wk st-'+status(a.t)+'"><div class="wk-main"><button class="linkish" data-act="edit" data-id="'+a.t.id+'">'+esc(a.t.n)+'</button><div class="wk-meta"><span>'+esc(a.why)+'</span></div></div></li>').join('')+'</ul>':'<div class="callout ok">Nothing urgent right now.</div>')+'</div>'+
+   '<div class="panel"><h2>Deadlines coming up</h2><h3>Next 7 days ('+d7.length+')</h3>'+miniList(d7)+'<h3>8 to 14 days ('+d14.length+')</h3>'+miniList(d14)+'<h3>15 to 30 days ('+d30.length+')</h3>'+miniList(d30)+'</div>'+
+   '<div class="panel"><h2>Overloaded weeks</h2>'+(heavy.length?'<p class="hint">These weeks plan more hours than your capacity of '+Math.round(cap)+' h. Open the Workload tab to see what is driving each one.</p><ul class="list">'+heavy.slice(0,8).map(o=>{const top=Array.from(o.items.entries()).filter(kv=>{const t=byId(kv[0]);return t&&t.g!=='gen'&&t.g!=='life';}).sort((a,b)=>b[1]-a[1]).slice(0,2).map(kv=>{const t=byId(kv[0]);return t?esc(t.n):'';}).filter(Boolean).join(' and ');return '<li class="wk"><div class="wk-main"><button class="linkish" data-act="gotoWeek" data-w="'+o.w+'">Week of '+fD(o.w)+'</button><div class="wk-meta"><span>about '+Math.round(o.h)+' h, '+Math.round(o.h-cap)+' h over</span><span>Biggest: '+top+'</span></div></div></li>';}).join('')+'</ul>':'<div class="callout ok">No upcoming week is over capacity.</div>')+'</div></div>'+
+   '<div class="stack"><div class="panel"><h2>Dependencies</h2>'+
+    (conflicts.length?'<div class="callout bad"><b>'+conflicts.length+' task'+(conflicts.length===1?'':'s')+' start before a prerequisite ends.</b> Open a task and use "Push later tasks" on its prerequisite, or drag it later.</div>'+miniList(conflicts,t=>'starts '+fD(toN(t.s))+', waits for '+depConflict(t).map(q=>esc(q.n)).join(', ')):'<div class="callout ok">Every task starts after the tasks it depends on.</div>')+
+    '<h3>Waiting on something else</h3>'+miniList(blocked,t=>'waiting on '+(t.dep||[]).map(byId).filter(q=>q&&q.p<100).map(q=>esc(q.n)).join(', '))+'</div>'+
+   '<div class="panel"><h2>Apply before exam season</h2><p class="hint">Mock preparation begins '+fD(mockStart)+' and revision follows. Work that lands after that point competes with your exams.</p>'+
+    (light.length?'<div class="callout ok">Quietest weeks before mocks: '+light.map(o=>'week of '+fD(o.w)+' (about '+Math.round(o.h)+' h)').join(', ')+'.</div>':'')+
+    (late.length?'<p class="note">'+late.length+' application tasks are scheduled after mock preparation starts. Consider pulling the earliest of these forward:</p>'+miniList(late.slice(0,6),t=>'starts '+fD(toN(t.s))):'<div class="callout ok">All application work finishes before mock preparation starts.</div>')+'</div>'+
+   '<div class="panel"><h2>Buffers and suggested start dates</h2><p class="hint">Buffers keep you from finishing on the deadline day. Suggested starts work back from each end date using the buffer and the pace you can sustain on a single task. Only tasks that should start earlier are listed.</p><div class="set">'+
+    setField('bufWork','Coursework buffer (days)',s.bufWork,0,30,1)+setField('bufFeedback','Draft to supervisor buffer (days)',s.bufFeedback,0,30,1)+setField('bufApp','Application buffer (days)',s.bufApp,0,30,1)+setField('pace','Hours per week on one task',s.pace,1,20,.5)+'</div>'+
+    '<h3>Suggested start dates ('+total+')</h3>'+
+    (sug.length?'<div class="tblwrap"><table class="tbl"><thead><tr><th>Task</th><th>Now</th><th>Suggested start</th><th>Aim to finish</th><th></th></tr></thead><tbody>'+sug.map(x=>{const t=x.t,g=x.g;return '<tr><td><button class="linkish" data-act="edit" data-id="'+t.id+'">'+esc(t.n)+'</button>'+(g.why.length?'<div class="note">'+esc(g.why.join(', '))+'</div>':'')+'</td><td>'+fD(toN(t.s))+'</td><td><b>'+fD(g.start)+'</b>'+(g.late?' <span class="tag over">start now</span>':'')+'</td><td>'+fD(g.finish)+'<div class="note">'+g.buf+' day buffer</div></td><td><button class="btn small" data-act="applySug" data-id="'+t.id+'">Apply</button></td></tr>';}).join('')+'</tbody></table></div><div class="dr-actions" style="margin-top:10px"><button class="btn" data-act="applyAllSug">Apply all shown</button>'+(total>10?'<button class="btn ghost" data-act="toggleSug">'+(ui.showAllSug?'Show fewer':'Show all '+total)+'</button>':'')+'</div>':'<p class="note">Every task already starts early enough for its buffer.</p>')+'</div></div></div>';
+}
+
+/* ---------- rendering: confirm ---------- */
+const CHECKS=[
+ ['sched','School deadlines','Ask your IB coordinator for the internal dates for the Extended Essay, TOK essay, every IA, CAS interviews and mock exams. Then update those tasks.'],
+ ['term','Term dates and holidays','Add your real breaks so the planner does not schedule work on rest days.'],
+ ['paper','Your personal exam timetable','The IB exam window is confirmed. Your subject paper dates come from your coordinator.'],
+ ['countries','Countries and application systems','Which of the UK, Europe, China, Indonesia and the US are you actually applying to?'],
+ ['unis','Universities and courses','List the universities and courses in the shortlist tracker below.'],
+ ['reqs','Requirements for each course','IB points, HL and SL subjects, English test rules, entrance tests and application deadlines. Use official university pages.'],
+ ['pred','Predicted grades and references','How your school handles predicted grades, references and transcripts, and the internal deadline for each.'],
+ ['hours','Your weekly hours','Set honest study hours on the Workload tab so warnings mean something.'],
+ ['extra','Activities you want to protect','Sport, music, service, family time. Add them as personal tasks so they stay in the plan.']
+];
+function renderConfirm(){
+  const conf=S.tasks.filter(t=>t.conf==='confirmed');
+  const chk=S.tasks.filter(t=>t.conf==='check'&&t.p<100).sort((a,b)=>toN(a.s)-toN(b.s));
+  const sch=chk.filter(t=>t.cat!=='university'),uni=chk.filter(t=>t.cat==='university'),lim=ui.showAllConf?999:6;
+  const confTable=list=>list.length?'<div class="tblwrap"><table class="tbl"><thead><tr><th>Task</th><th>Planned date</th><th></th></tr></thead><tbody>'+list.map(t=>'<tr><td><button class="linkish" data-act="edit" data-id="'+t.id+'">'+esc(t.n)+'</button></td><td>'+(t.ms?fD(toN(t.s)):fD(toN(t.s))+' to '+fD(toN(t.e)))+'</td><td><button class="btn small" data-act="verify" data-id="'+t.id+'">Mark confirmed</button></td></tr>').join('')+'</tbody></table></div>':'<p class="note">Nothing to confirm here.</p>';
+  $('#view-confirm').innerHTML='<div class="grid2"><div class="stack">'+
+   '<div class="panel"><h2>Dates I could verify</h2><p class="hint">These come from official sources. Everything else in the plan is a planning estimate or needs your check.</p><ul class="list">'+
+   conf.map(t=>'<li class="wk"><div class="wk-main"><button class="linkish" data-act="edit" data-id="'+t.id+'">'+esc(t.n)+'</button><div class="wk-meta"><span>'+(t.ms?fDY(toN(t.s)):fDY(toN(t.s))+' to '+fDY(toN(t.e)))+'</span></div><div class="note">'+esc(t.note)+'</div></div></li>').join('')+'</ul>'+
+   '<p class="note" style="margin-top:10px">Sources: UCAS key dates for 2027 entry (ucas.com/advisers/help-and-training/key-dates-timeline) and the IB May 2027 examination schedule (ibo.org).</p></div>'+
+   '<div class="panel"><h2>Details I need from you</h2><p class="hint">Tick each one when it is done. You do not need all of these today.</p>'+
+   CHECKS.map(c=>{const v=S.confirm[c[0]]||{};return '<div style="padding:8px 0;border-bottom:1px solid var(--line2)"><label style="display:flex;gap:10px;align-items:flex-start"><span class="chk"><input type="checkbox" data-c="'+c[0]+'" '+(v.done?'checked':'')+'><span class="box"></span></span><span><b>'+c[1]+'</b><br><span class="note">'+c[2]+'</span></span></label><label class="fld" style="margin:6px 0 0 32px"><span>Your notes</span><input data-ctext="'+c[0]+'" value="'+esc(v.text||'')+'" placeholder="What you found out"></label></div>';}).join('')+'</div></div>'+
+   '<div class="stack"><div class="panel"><h2>Dates to confirm ('+chk.length+')</h2><p class="hint">These dates depend on your school or on a university, so I could not set them for you. Check each at the source, then mark it confirmed. Dates labelled Estimate are just planning suggestions, so change them whenever you like.</p>'+
+   '<h3>Ask your school or IB coordinator ('+sch.length+')</h3>'+confTable(sch.slice(0,lim))+
+   '<h3>Check with each university or UCAS ('+uni.length+')</h3>'+confTable(uni.slice(0,lim))+
+   (sch.length>6||uni.length>6?'<div class="dr-actions" style="margin-top:10px"><button class="btn" data-act="toggleConf">'+(ui.showAllConf?'Show fewer':'Show all')+'</button></div>':'')+'</div>'+
+   '<div class="panel"><h2>University shortlist tracker</h2><p class="hint">Sort universities into reach, target and safer only after you have checked their published requirements. This tracker does not estimate your chances. Add a verified deadline to put it on the timeline.</p><div class="tblwrap"><table class="tbl uni-tbl"><thead><tr><th>University</th><th>Country</th><th>Course</th><th>Group</th><th>Published requirement</th><th>Checked</th><th>Deadline</th><th>Sure</th><th></th></tr></thead><tbody>'+
+   S.unis.map(u=>'<tr><td><input data-u="'+u.id+'" data-k="name" value="'+esc(u.name)+'" aria-label="University"></td><td><input data-u="'+u.id+'" data-k="country" value="'+esc(u.country)+'" aria-label="Country"></td><td><input data-u="'+u.id+'" data-k="course" value="'+esc(u.course)+'" aria-label="Course"></td><td><select data-u="'+u.id+'" data-k="tier" aria-label="Group">'+[['unsorted','Not sorted'],['reach','Reach'],['target','Target'],['safer','Safer']].map(o=>'<option value="'+o[0]+'"'+(u.tier===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></td><td><input data-u="'+u.id+'" data-k="req" value="'+esc(u.req)+'" placeholder="e.g. points, HL subjects" aria-label="Requirement"></td><td><input type="checkbox" data-u="'+u.id+'" data-k="verified" '+(u.verified?'checked':'')+' aria-label="Requirement checked on official page"></td><td><input type="date" data-u="'+u.id+'" data-k="deadline" value="'+esc(u.deadline||'')+'" aria-label="Deadline"></td><td><input type="checkbox" data-u="'+u.id+'" data-k="dconf" '+(u.dconf?'checked':'')+' aria-label="Deadline confirmed on official page"></td><td><button class="btn small" data-act="uniTask" data-id="'+u.id+'">Add to timeline</button> <button class="btn small ghost" data-act="uniDel" data-id="'+u.id+'">Remove</button></td></tr>').join('')+'</tbody></table></div>'+
+   (S.unis.length?'':'<p class="note">No universities yet.</p>')+'<div class="dr-actions" style="margin-top:10px"><button class="btn primary" data-act="uniAdd">Add university</button></div></div></div></div>';
+}
+
+/* ---------- drawer editor ---------- */
+function opt(list,val){return list.map(o=>'<option value="'+esc(o[0])+'"'+(o[0]===val?' selected':'')+'>'+esc(o[1])+'</option>').join('');}
+function subjectList(){const set=new Set(SUBS);S.tasks.forEach(t=>{if(t.sub)set.add(t.sub);});return Array.from(set);}
+function renderEditor(){
+  const d=$('#drawer'),t=byId(ui.editId);
+  if(!t){d.classList.remove('open');d.setAttribute('aria-hidden','true');d.innerHTML='';return;}
+  d.classList.add('open');d.setAttribute('aria-hidden','false');
+  const others=S.tasks.filter(x=>x.id!==t.id&&(t.dep||[]).indexOf(x.id)<0);
+  const optg=GROUPS.map(g=>{const l=others.filter(x=>x.g===g.id);return l.length?'<optgroup label="'+esc(g.n)+'">'+l.map(x=>'<option value="'+x.id+'">'+esc(x.n)+'</option>').join('')+'</optgroup>':'';}).join('');
+  d.innerHTML='<div class="dr-head"><h2>'+(t.ms?'Edit milestone':'Edit task')+'</h2><button class="btn small" data-act="closeEdit">Close</button></div><div class="dr-body">'+
+   '<label class="fld"><span>Name</span><input data-f="n" value="'+esc(t.n)+'"></label>'+
+   '<div class="row2"><label class="fld"><span>Group</span><select data-f="g">'+opt(GROUPS.map(g=>[g.id,g.n]),t.g)+'</select></label><label class="fld"><span>Category</span><select data-f="cat">'+opt(Object.keys(CATS).map(k=>[k,CATS[k]]),t.cat)+'</select></label></div>'+
+   '<div class="row2"><label class="fld"><span>Subject or stream</span><input data-f="sub" list="subjList" value="'+esc(t.sub)+'"><datalist id="subjList">'+subjectList().map(x=>'<option value="'+esc(x)+'">').join('')+'</datalist></label><label class="fld"><span>Priority</span><select data-f="pri">'+opt(Object.keys(PRI).map(k=>[k,PRI[k]]),t.pri)+'</select></label></div>'+
+   '<div class="row2"><label class="fld"><span>Type</span><select data-f="type">'+opt([['task','Task with a start and end'],['ms','Milestone (single date)']],t.ms?'ms':'task')+'</select></label><label class="fld"><span>Date status</span><select data-f="conf">'+opt(Object.keys(CONF).map(k=>[k,CONF[k].l]),t.conf)+'</select></label></div>'+
+   '<div class="row2"><label class="fld"><span>'+(t.ms?'Date':'Start')+'</span><input type="date" data-f="s" value="'+t.s+'"></label>'+(t.ms?'':'<label class="fld"><span>End</span><input type="date" data-f="e" value="'+t.e+'"></label>')+'</div>'+
+   '<label class="fld"><span>Progress: <b id="pv">'+t.p+'</b>%</span><input type="range" data-f="p" min="0" max="100" step="5" value="'+t.p+'"></label>'+
+   '<div class="row2"><label class="fld"><span>Estimated hours</span><input type="number" data-f="h" min="0" step="0.5" value="'+t.h+'"></label><label class="fld"><span>Buffer type</span><select data-f="bt">'+opt([['work','Coursework'],['feedback','Draft for feedback'],['app','Application'],['none','No buffer']],t.bt||'work')+'</select></label></div>'+
+   '<div class="fld"><span>Depends on</span><div class="chips">'+((t.dep||[]).map(byId).filter(Boolean).map(q=>'<span class="chipx">'+esc(q.n)+'<button data-act="rmdep" data-dep="'+q.id+'" aria-label="Remove dependency on '+esc(q.n)+'">x</button></span>').join('')||'<span class="note">No prerequisites</span>')+'</div><select data-f="adddep" aria-label="Add a prerequisite"><option value="">Add a prerequisite</option>'+optg+'</select></div>'+
+   '<label class="fld"><span>Notes</span><textarea data-f="note">'+esc(t.note)+'</textarea></label>'+
+   '<div class="readout" id="readout"></div>'+
+   '<div class="dr-actions"><button class="btn primary" data-act="closeEdit">Done</button><button class="btn" data-act="cascade">Push later tasks</button><button class="btn danger" data-act="delTask">'+(ui.delArm?'Click again to delete':'Delete')+'</button></div></div>';
+  updateReadout();
+}
+function updateReadout(){
+  const t=byId(ui.editId),el=$('#readout');if(!t||!el)return;
+  const st=status(t),c=depConflict(t),ok=t.conf==='confirmed';
+  let h='<div>Status: <span class="tag '+(st==='over'?'over':st==='done'?'done':st==='prog'?'prog':'')+'">'+STAT[st]+'</span> <span class="tag '+CONF[t.conf].c+'">'+CONF[t.conf].l+'</span></div>';
+  if(!t.ms)h+='<div class="note">'+fWD(toN(t.s))+' to '+fWD(toN(t.e))+', '+(toN(t.e)-toN(t.s)+1)+' days</div>';
+  if(c.length)h+='<div class="callout bad">Starts before '+c.map(q=>esc(q.n)).join(', ')+' ends. Move this task later or push it with the prerequisite.</div>';
+  const sg=suggest(t);
+  if(sg)h+='<div class="note">Aim to finish by '+fD(sg.finish)+(sg.buf?' to keep a '+sg.buf+' day buffer':'')+'.'+(sg.start<=toN(t.s)-3?' At your pace, start by '+fD(sg.start)+'.':'')+'</div>';
+  if(!ok)h+='<div class="note">This date is not verified. Confirm it at the source, then set the date status to Confirmed.</div>';
+  el.innerHTML=h;
+}
+function openEditor(id){ui.editId=id;ui.delArm=false;renderEditor();const i=$('#drawer [data-f="n"]');if(i&&!narrow())i.focus({preventScroll:true});}
+function closeEditor(){ui.editId=null;ui.delArm=false;renderEditor();}
+function onField(e){
+  const f=e.target.dataset.f;if(!f)return;const t=byId(ui.editId);if(!t)return;let v=e.target.value,struct=false;
+  if(f==='n')t.n=v;
+  else if(f==='g'){t.g=v;}
+  else if(f==='cat')t.cat=v;
+  else if(f==='sub')t.sub=v;
+  else if(f==='pri')t.pri=v;
+  else if(f==='conf')t.conf=v;
+  else if(f==='bt')t.bt=v;
+  else if(f==='note')t.note=v;
+  else if(f==='h')t.h=Math.max(0,+v||0);
+  else if(f==='p'){t.p=+v;const pv=$('#pv');if(pv)pv.textContent=v;}
+  else if(f==='type'){if(v==='ms'){t.ms=true;t.e=t.s;}else{t.ms=false;if(toN(t.e)<=toN(t.s))t.e=toISO(toN(t.s)+6);}struct=true;}
+  else if(f==='s'){if(!v)return;t.s=v;if(t.ms||toN(t.e)<toN(v))t.e=v;}
+  else if(f==='e'){if(!v)return;t.e=v;if(toN(v)<toN(t.s))t.s=v;}
+  else if(f==='adddep'){if(!v)return;t.dep=(t.dep||[]).concat(v);struct=true;}
+  if(e.type==='change'&&(f==='s'||f==='e')){const o=$('#drawer [data-f="'+(f==='s'?'e':'s')+'"]');if(o)o.value=f==='s'?t.e:t.s;}
+  touch();
+  if(struct)renderEditor();else updateReadout();
+  refresh(f==='n'||f==='sub'||f==='cat');
+}
+function delTask(){
+  if(!ui.delArm){ui.delArm=true;renderEditor();setTimeout(()=>{if(ui.delArm){ui.delArm=false;if(ui.editId)renderEditor();}},4000);return;}
+  const id=ui.editId;S.tasks=S.tasks.filter(t=>t.id!==id);S.tasks.forEach(t=>{t.dep=(t.dep||[]).filter(d=>d!==id);});
+  closeEditor();touch();refresh(true);toast('Task deleted');
+}
+function cascade(id){
+  const seen=new Set();let moved=0;
+  const go=pid=>{const p=byId(pid);S.tasks.filter(t=>(t.dep||[]).indexOf(pid)>=0).forEach(t=>{
+    const need=toN(p.e)+(p.ms||t.ms?0:1);
+    if(toN(t.s)<need){const dl=need-toN(t.s);t.s=toISO(toN(t.s)+dl);t.e=toISO(toN(t.e)+dl);moved++;}
+    if(!seen.has(t.id)){seen.add(t.id);go(t.id);}
+  });};
+  go(id);touch();refresh(true);if(ui.editId)updateReadout();
+  toast(moved?'Moved '+moved+' later task'+(moved===1?'':'s')+' to follow this one':'Nothing needed to move');
+}
+function addTask(){
+  const id='c'+Date.now().toString(36);
+  const g=F.cat?(GROUPS.find(x=>x.cat===F.cat)||GROUPS[0]).id:'life';
+  const s=Math.max(TODAY,monday(TODAY));
+  S.tasks.push({id:id,g:g,n:'New task',cat:GCAT[g],sub:F.sub||'General applications',pri:'M',s:toISO(s),e:toISO(s+6),p:0,h:3,dep:[],ms:false,conf:'estimated',bt:'work',note:''});
+  S.collapsed[g]=false;touch();refreshFilterOptions();refresh(true);openEditor(id);
+}
+
+/* ---------- controller ---------- */
+let rafId=0;
+function refresh(full){
+  if(rafId)cancelAnimationFrame(rafId);
+  rafId=requestAnimationFrame(()=>{rafId=0;renderStrip();renderNext();renderActive();if(full)refreshFilterOptions();});
+}
+function renderActive(){
+  if(ui.tab==='timeline')renderGantt();
+  else if(ui.tab==='week'){G.R=range();renderWeek();}
+  else if(ui.tab==='load')renderLoad();
+  else if(ui.tab==='plan')renderPlan();
+  else if(ui.tab==='confirm')renderConfirm();
+}
+function renderAll(){renderStrip();renderNext();renderActive();if(ui.editId)renderEditor();}
+function setTab(name){
+  ui.tab=name;
+  $$('#tabs .tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===name)));
+  $$('.view').forEach(v=>v.hidden=v.id!=='view-'+name);
+  renderActive();
+  if(name==='timeline')scrollToday(true);
+}
+function scrollToday(soft){const h=$('#gantt');if(!h||!G.R)return;if(soft&&h.scrollLeft>0)return;h.scrollLeft=Math.max(0,(TODAY-G.R.a)*G.px-60);}
+function refreshFilterOptions(){
+  const sel=$('#fSub'),cur=F.sub;
+  const subs=SUBS.filter(s=>S.tasks.some(t=>t.sub===s)).concat(Array.from(new Set(S.tasks.map(t=>t.sub))).filter(s=>s&&SUBS.indexOf(s)<0));
+  sel.innerHTML='<option value="">All subjects and streams</option>'+subs.map(s=>'<option value="'+esc(s)+'"'+(s===cur?' selected':'')+'>'+esc(s)+'</option>').join('');
+}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2600);}
+function showModal(title,html){
+  const m=$('#modalHost');m.innerHTML='<div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="box"><h2>'+esc(title)+'</h2>'+html+'<div class="dr-actions" style="margin-top:12px"><button class="btn primary" data-act="closeModal">Close</button></div></div></div>';
+}
+
+/* export and import */
+async function doExport(){
+  const json=JSON.stringify(S,null,2);
+  try{
+    const dl=await window.claude.use('downloads');
+    if(dl){await dl.save({filename:'ib-year13-plan.json',data:json});toast('Backup saved');return;}
+  }catch(e){if(e&&e.code==='declined')return;}
+  showModal('Copy your backup','<p class="note">Select all, copy, and paste into a text file named ib-year13-plan.json. Use Import backup to restore it later.</p><textarea id="expText" readonly></textarea>');
+  const ta=$('#expText');if(ta){ta.value=json;ta.focus();ta.select();}
+}
+function doImport(file){
+  const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||!Array.isArray(d.tasks))throw new Error('bad');S=fixState(d);touch();refreshFilterOptions();renderAll();toast('Backup imported');}catch(e){toast('That file is not a valid backup');}};
+  r.readAsText(file);
+}
+
+/* actions */
+function act(b,e){
+  const a=b.dataset.act,id=b.dataset.id;
+  switch(a){
+    case 'tab':setTab(b.dataset.tab);break;
+    case 'edit':openEditor(id);break;
+    case 'closeEdit':closeEditor();break;
+    case 'addTask':addTask();break;
+    case 'delTask':delTask();break;
+    case 'cascade':if(ui.editId)cascade(ui.editId);break;
+    case 'rmdep':{const t=byId(ui.editId);if(t){t.dep=t.dep.filter(x=>x!==b.dataset.dep);touch();renderEditor();refresh();}break;}
+    case 'zoom':ui.zoom=+b.dataset.z;$$('[data-act="zoom"]').forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset.z===ui.zoom)));renderGantt();break;
+    case 'today':{const h=$('#gantt');h.scrollLeft=Math.max(0,(TODAY-G.R.a)*G.px-60);h.scrollTop=0;break;}
+    case 'arrows':ui.arrows=!ui.arrows;b.setAttribute('aria-pressed',String(ui.arrows));renderGantt();break;
+    case 'expandAll':GROUPS.forEach(g=>S.collapsed[g.id]=false);touch();renderGantt();break;
+    case 'collapseAll':GROUPS.forEach(g=>S.collapsed[g.id]=true);touch();renderGantt();break;
+    case 'toggleG':S.collapsed[b.dataset.g]=!S.collapsed[b.dataset.g];touch();renderGantt();break;
+    case 'clearFilters':Object.keys(F).forEach(k=>F[k]='');$('#fQ').value='';['fSub','fCat','fPri','fSt','fWin'].forEach(i=>$('#'+i).value='');renderGantt();break;
+    case 'toggle':{const t=byId(id);if(!t)break;if(b.checked){if(t.p<100)t.pp=t.p;t.p=100;}else{t.p=t.pp||0;}touch();refresh();break;}
+    case 'setp':{const t=byId(id);if(!t)break;const v=+b.dataset.v;if(t.p<100&&v===100)t.pp=t.p;t.p=v;touch();refresh();break;}
+    case 'selWeek':ui.selWeek=+b.dataset.w;renderLoad();break;
+    case 'gotoWeek':ui.selWeek=+b.dataset.w;setTab('load');break;
+    case 'applySug':{const t=byId(id),g=t&&suggest(t);if(!g)break;t.s=toISO(g.start);if(toN(t.e)<g.start)t.e=t.s;touch();refresh();toast('Start date updated');break;}
+    case 'applyAllSug':{let n=0;sugList().slice(0,ui.showAllSug?999:10).forEach(x=>{x.t.s=toISO(x.g.start);if(toN(x.t.e)<x.g.start)x.t.e=x.t.s;n++;});touch();refresh();toast('Updated '+n+' start dates');break;}
+    case 'toggleSug':ui.showAllSug=!ui.showAllSug;renderPlan();break;
+    case 'toggleConf':ui.showAllConf=!ui.showAllConf;renderConfirm();break;
+    case 'verify':{const t=byId(id);if(t){t.conf='confirmed';touch();refresh();toast('Marked as confirmed');}break;}
+    case 'uniAdd':S.unis.push({id:'u'+Date.now().toString(36),name:'',country:'',course:'',tier:'unsorted',req:'',verified:false,deadline:'',dconf:false,tid:''});touch();renderConfirm();break;
+    case 'uniDel':S.unis=S.unis.filter(u=>u.id!==id);touch();renderConfirm();break;
+    case 'uniTask':{
+      const u=S.unis.find(x=>x.id===id);if(!u)break;
+      if(!u.deadline){toast('Enter a deadline first');break;}
+      let t=u.tid&&byId(u.tid);
+      const nm=(u.name||'University')+': application deadline';
+      if(t){t.s=u.deadline;t.e=u.deadline;t.n=nm;t.conf=u.dconf?'confirmed':'check';}
+      else{const tid='d'+Date.now().toString(36);u.tid=tid;S.tasks.push({id:tid,g:'apply',n:nm,cat:'university',sub:u.country||'General applications',pri:'H',s:u.deadline,e:u.deadline,p:0,h:0,dep:[],ms:true,conf:u.dconf?'confirmed':'check',bt:'none',note:'Added from the shortlist tracker.'});}
+      touch();refreshFilterOptions();toast('Deadline is on the timeline');break;}
+    case 'export':doExport();break;
+    case 'import':$('#fileIn').click();break;
+    case 'closeModal':$('#modalHost').innerHTML='';break;
+    case 'reset':
+      if(!ui.resetArm){ui.resetArm=true;b.textContent='Click again to erase everything';b.classList.add('danger');setTimeout(()=>{ui.resetArm=false;b.textContent='Reset to starter plan';b.classList.remove('danger');},4000);}
+      else{ui.resetArm=false;b.textContent='Reset to starter plan';b.classList.remove('danger');S=seedState();ui.editId=null;touch();refreshFilterOptions();renderAll();toast('Starter plan restored');}
+      break;
+  }
+}
+
+/* drag */
+let drag=null;
+function onDown(e){
+  const bar=e.target.closest('.bar,.ms');if(!bar||(e.button&&e.button>0))return;
+  const t=byId(bar.dataset.id);if(!t)return;
+  const mode=e.target.classList.contains('hl')?'l':e.target.classList.contains('hr')?'r':'m';
+  drag={t:t,bar:bar,mode:t.ms?'m':mode,x0:e.clientX,s0:toN(t.s),e0:toN(t.e),moved:false,ns:toN(t.s),ne:toN(t.e)};
+  try{bar.setPointerCapture(e.pointerId);}catch(x){}
+}
+function onMove(e){
+  if(!drag)return;
+  const dxp=e.clientX-drag.x0;if(Math.abs(dxp)>4)drag.moved=true;if(!drag.moved)return;
+  const dx=Math.round(dxp/G.px);let ns=drag.s0,ne=drag.e0;
+  if(drag.mode==='m'){ns+=dx;ne+=dx;}else if(drag.mode==='l'){ns=Math.min(drag.s0+dx,drag.e0);}else{ne=Math.max(drag.e0+dx,drag.s0);}
+  drag.ns=ns;drag.ne=ne;
+  if(drag.t.ms)drag.bar.style.left=((ns-G.R.a+.5)*G.px-8)+'px';
+  else{drag.bar.style.left=(ns-G.R.a)*G.px+'px';drag.bar.style.width=Math.max((ne-ns+1)*G.px,8)+'px';}
+  drag.bar.title=fD(ns)+(drag.t.ms?'':' to '+fD(ne));
+}
+function onUp(){
+  if(!drag)return;const d=drag;drag=null;
+  if(!d.moved){openEditor(d.t.id);return;}
+  d.t.s=toISO(d.ns);d.t.e=toISO(d.t.ms?d.ns:d.ne);touch();refresh();
+  const c=depConflict(d.t);
+  toast(c.length?'Moved. It now starts before '+c[0].n+' ends.':'Moved to '+fD(d.ns)+(d.t.ms?'':' to '+fD(d.ne)));
+  if(ui.editId===d.t.id)renderEditor();
+}
+function onKey(e){
+  const bar=e.target.closest&&e.target.closest('.bar,.ms');if(!bar)return;
+  const t=byId(bar.dataset.id);if(!t)return;
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();openEditor(t.id);return;}
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+    e.preventDefault();const d=(e.key==='ArrowLeft'?-1:1)*(e.shiftKey?7:1);
+    t.s=toISO(toN(t.s)+d);t.e=toISO(toN(t.e)+d);touch();refresh();
+    setTimeout(()=>{const nb=$('[data-id="'+t.id+'"].bar,[data-id="'+t.id+'"].ms');if(nb)nb.focus({preventScroll:true});},60);
+  }
+}
+
+/* wire up */
+function init(){
+  loadLocal();
+  $('#drawer').addEventListener('input',onField);
+  $('#drawer').addEventListener('change',onField);
+  document.addEventListener('click',e=>{
+    if(e.target.classList&&e.target.classList.contains('modal')){$('#modalHost').innerHTML='';return;}
+    const b=e.target.closest('[data-act]');if(!b||b.matches('input'))return;act(b,e);
+  });
+  document.addEventListener('change',e=>{
+    const t=e.target;
+    if(t.matches('input[data-act]')){act(t,e);return;}
+    if(t.dataset.set){const k=t.dataset.set;S.settings[k]=+t.value;touch();refresh();return;}
+    if(t.dataset.c){const k=t.dataset.c;S.confirm[k]=Object.assign({},S.confirm[k],{done:t.checked});touch();return;}
+    if(t.dataset.u){const u=S.unis.find(x=>x.id===t.dataset.u);if(u){u[t.dataset.k]=t.type==='checkbox'?t.checked:t.value;touch();}return;}
+  });
+  document.addEventListener('input',e=>{
+    const t=e.target;
+    if(t.dataset.ctext){const k=t.dataset.ctext;S.confirm[k]=Object.assign({},S.confirm[k],{text:t.value});touch();return;}
+    if(t.dataset.u&&t.type!=='checkbox'&&t.tagName!=='SELECT'&&t.type!=='date'){const u=S.unis.find(x=>x.id===t.dataset.u);if(u){u[t.dataset.k]=t.value;touch();}}
+  });
+  $('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b)setTab(b.dataset.tab);});
+  const g=$('#gantt');g.addEventListener('pointerdown',onDown);g.addEventListener('pointermove',onMove);g.addEventListener('pointerup',onUp);g.addEventListener('pointercancel',()=>{drag=null;renderGantt();});g.addEventListener('keydown',onKey);
+  $('#fQ').addEventListener('input',e=>{F.q=e.target.value.trim();renderGantt();});
+  [['fSub','sub'],['fCat','cat'],['fPri','pri'],['fSt','st'],['fWin','win']].forEach(p=>$('#'+p[0]).addEventListener('change',e=>{F[p[1]]=e.target.value;renderGantt();}));
+  $('#fileIn').addEventListener('change',e=>{if(e.target.files[0])doImport(e.target.files[0]);e.target.value='';});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#modalHost').innerHTML){$('#modalHost').innerHTML='';}else if(ui.editId)closeEditor();}});
+  let rt=0;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(ui.tab==='timeline')renderGantt();},150);});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){const n=nowN();if(n!==TODAY){TODAY=n;renderAll();}}});
+  refreshFilterOptions();renderAll();scrollToday(false);
+  setSave('Saved in this browser');
+  initRemote();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body>
+</html>
